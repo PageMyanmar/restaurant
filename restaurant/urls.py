@@ -20,7 +20,7 @@ from django.urls import path,re_path,include
 from django.conf.urls.static import static
 from django.conf import settings
 from views.user import auth_view,page_view,cart_view
-from views.admin import auth_views,role_views,page_views,user_views,category_views,product_views,table_views
+from views.admin import auth_views,role_views,page_views,user_views,category_views,product_views,table_views,payment_views
 
 urlpatterns = [
     path("abcde/", admin.site.urls),
@@ -85,6 +85,12 @@ urlpatterns = [
     path('delete-table/<int:id>/',table_views.DeleteTable),
     path('order/<int:id>/',table_views.Order),
     path('order-confirm/<int:id>/',cart_view.OrderConfirm),
+
+    #Payment
+    path('payments/',payment_views.Payments),
+    path('create-payment/',payment_views.CreatePayment),
+    path('update-payment/<int:id>/',payment_views.UpdatePayment),
+    path('delete-payment/<int:id>/',payment_views.DeletePayment)
 
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

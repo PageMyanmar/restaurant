@@ -1,0 +1,65 @@
+{% extends 'user/components/base.html' %}
+
+{% block title %}Payments{% endblock %}
+
+{% block body %}
+
+
+<!--=============== BREADCRUMB ===============-->
+<section class="breadcrumb">
+    <ul class="breadcrumb__list flex container">
+        <li><a href="/" class="breadcrumb__link">Home</a></li>
+        <li><span class="breadcrumb__link">></span></li>
+        <li><span class="breadcrumb__link">payments</span></li>
+    </ul>
+</section>
+
+<!--=============== CART ===============-->
+<section class="table__cards section--lg container">
+    <button class="btn btn-md" style="margin-bottom: 3rem;" onclick="window.location.href='/create-payment/'">+ Create payment</button>
+    <div class="table__card--group grid">
+        {% for payment in payments %}
+        <div class="table__card" id="payment-card-{{payment.id}}">
+            <a href="/order/{{payment.id}}/" class="table__card--banner">
+                <h4 class="table__card--title"
+                    style="background-color: {% if payment.status == True %}#dc3545{% else %}#28a745{% endif %};">
+                    {{payment.name}}</h4>
+            </a>
+            <button class="table__card--dot">&#8942;</button>
+            <div class="table__card--actions" style="display: none;">
+                <button type="button" onclick="window.location.href='/update-payment/{{payment.id}}/'" class="btn btn-es">Edit</button>
+                <button type="button" onclick="window.location.href='/delete-payment/{{payment.id}}/'" class="btn btn-es delete">Delete</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="divider">
+        <i class="fi fi-rs-fingerprint"></i>
+    </div>
+
+</section>
+
+<script>
+    document.querySelectorAll(".table__card--dot").forEach(actionButton => {
+        actionButton.addEventListener("click", (event) => {
+            const actions = event.target.nextElementSibling;
+            const isVisible = actions.style.display === "block";
+            document.querySelectorAll(".table__card--actions").forEach(actionDiv => {
+                actionDiv.style.display = "none"; // Hide other action containers
+            });
+            actions.style.display = isVisible ? "none" : "block";
+        });
+    });
+
+    // Close the actions menu when clicking outside
+    document.addEventListener("click", (event) => {
+        if (!event.target.closest(".table__card")) {
+            document.querySelectorAll(".table__card--actions").forEach(actionDiv => {
+                actionDiv.style.display = "none";
+            });
+        }
+    });
+</script>
+
+{% endblock %}
