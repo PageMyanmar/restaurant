@@ -1,0 +1,125 @@
+{% extends 'user/components/base.html' %}
+
+{% block title %}Compares{% endblock %}
+
+{% block body %}
+
+<!--=============== BREADCRUMB ===============-->
+<section class="breadcrumb">
+  <ul class="breadcrumb__list flex container">
+    <li><a href="/" class="breadcrumb__link">Home</a></li>
+    <li><span class="breadcrumb__link">></span></li>
+    <li><span class="breadcrumb__link">Shop</span></li>
+    <li><span class="breadcrumb__link">></span></li>
+    <li><span class="breadcrumb__link">Compare</span></li>
+  </ul>
+</section>
+
+<!--=============== COMPARE ===============-->
+<section class="compare container section--lg">
+  <table class="compare__table">
+    <tr>
+      <th>Image</th>
+      {% for compare in compares %}
+      <td><img src="{{compare.product.featured_image.url}}" alt="{{compare.product.name}}" class="compare__img"></td>
+      {% endfor %}
+    </tr>
+
+    <tr>
+      <th>Name</th>
+      {% for compare in compares %}
+      <td>
+        <h3 class="table__title">{{compare.product.name}}</h3>
+      </td>
+      {% endfor %}
+    </tr>
+
+    <tr>
+      <th>Price</th>
+      {% for compare in compares %}
+      <td>
+        {% if compare.product.sale_price %}
+        {{ compare.product.sale_price }} MMK
+        {% else %}
+        {{ compare.product.regular_price }} MMK
+        {% endif %}
+      </td>
+      {% endfor %}
+    </tr>
+
+    <tr>
+      <th>Description</th>
+      {% for compare in compares %}
+      <td>
+        <p>{{compare.product.description}}</p>
+      </td>
+      {% endfor%}
+    </tr>
+
+    <tr>
+      <th>Colors</th>
+      {% for compare in compares %}
+      <td>
+        <ul class="color__list compare__colors">
+          {% for color in compare.product.color.all %}
+          <li>
+            <span class="color__link" style="background:{{color.name}};"></span>
+          </li>
+          {% endfor %}
+        </ul>
+      </td>
+      {% endfor %}
+    </tr>
+
+    <tr>
+      <th>Stock</th>
+      {% for compare in compares %}
+      <td><span class="table__stock">
+          {% if compare.product.stock > 0 %}
+          In Stock
+          {% else %}
+          Out of Stock
+          {% endif %}
+        </span>
+      </td>
+      {% endfor %}
+    </tr>
+
+    <!-- <tr>
+      <th>Weight</th>
+      <td><span class="table__weight">150 grams</span></td>
+      <td><span class="table__weight">150 grams</span></td>
+      <td><span class="table__weight">150 grams</span></td>
+    </tr>
+
+    <tr>
+      <th>Dimensions</th>
+      <td><span class="table__dimension">N/A</span></td>
+      <td><span class="table__dimension">N/A</span></td>
+      <td><span class="table__dimension">N/A</span></td>
+    </tr> -->
+
+    <tr>
+      <th>Buy</th>
+      {% for compare in compares %}
+      <td>
+        <button type="button" class="btn btn--sm" onclick="addToCart(event, {{ compare.product.id }})">Add to
+          Cart</button>
+      </td>
+      {% endfor %}
+    </tr>
+
+    <tr>
+      <th>Remove</th>
+      {% for compare in compares %}
+      <td>
+        <button class="table__trash" onclick="removeFromCompare(event, {{ compare.product.id }})">
+          <i class="fi fi-rs-trash"></i>
+        </button>
+      </td>
+      {% endfor %}
+    </tr>
+  </table>
+</section>
+
+{% endblock %}

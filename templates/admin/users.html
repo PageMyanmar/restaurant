@@ -1,0 +1,329 @@
+{% extends 'admin/components/base.html' %}
+
+{% block title %}Users{% endblock %}
+{% load static %}
+{% block body %}
+
+<style>
+    /* Toggle switch style */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 20px;
+    }
+
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 34px;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 14px;
+        width: 14px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+
+    input:checked+.slider {
+        background-color: var(--primary);
+    }
+
+    input:checked+.slider:before {
+        transform: translateX(20px);
+    }
+</style>
+
+<div class="col-xl-12">
+    <div class="card" id="accordion-three">
+        <div class="card-header flex-wrap d-flex justify-content-between px-3">
+            <div>
+                <h4 class="card-title">User Table</h4>
+            </div>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
+                + Add New User
+            </button>
+        </div>
+
+        <!-- /tab-content -->
+        <div class="tab-content" id="myTabContent-2">
+            <div class="tab-pane fade show active" id="withoutSpace" user="tabpanel" aria-labelledby="home-tab-2">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table id="example3" class="display table" style="min-width: 845px">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Active</th>
+                                    <th>Staff</th>
+                                    <th>Superuser</th>
+                                    <th>Creating Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in users %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+
+                                    <td>{{user.username}}</td>
+                                    <td>{{user.email}}</td>
+                                    <td>{{user.role}}</td>
+                                    <td>
+                                        {% if user.is_active %}
+                                        <span class="badge badge-success light">Yes</span>
+                                        {% else %}
+                                        <span class="badge badge-danger light">No</span>
+                                        {% endif %}
+                                    <td>
+                                        {% if user.is_staff %}
+                                        <span class="badge badge-success light">Yes</span>
+                                        {% else %}
+                                        <span class="badge badge-danger light">No</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if user.is_superuser %}
+                                        <span class="badge badge-success light">Yes</span>
+                                        {% else %}
+                                        <span class="badge badge-danger light">No</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{user.created_at}}</td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <button data-bs-toggle="modal" data-bs-target="#editModal_{{user.id}}"
+                                                class="btn btn-primary shadow btn-xs sharp me-1"><i
+                                                    class="fas fa-pencil-alt"></i></button>
+                                            <button data-bs-toggle="modal" data-bs-target="#deleteModal_{{user.id}}"
+                                                class="btn btn-danger shadow btn-xs sharp"><i
+                                                    class="fa fa-trash"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /tab-content -->
+
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-center" style="max-width: 700px;">
+        <form action="/users/create/" method="POST" class="modal-content">
+            {% csrf_token %}
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Add New User</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" name="username" id="username">
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email" id="email">
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" name="password" id="password">
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <label for="passwordconfirm" class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control" name="passwordconfirm" id="passwordconfirm">
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <label for="role" class="form-label">Role</label>
+                            <select class="default-select form-control wide" name="role" id="role">
+                                {% for role in roles %}
+                                <option value="{{role.id}}" {% if role.id == user.role.id %} selected {% endif %}>
+                                    {{role.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="form-group">
+                            <label for="is_active">Is Active</label>
+                            <label class="switch">
+                                <input type="checkbox" name="is_active" id="is_active">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="form-group">
+                            <label for="is_staff">Is Staff</label>
+                            <label class="switch">
+                                <input type="checkbox" name="is_staff" id="is_staff">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="form-group">
+                            <label for="is_superuser">Is Superuser</label>
+                            <label class="switch">
+                                <input type="checkbox" name="is_superuser" id="is_superuser">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger light" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% for user in users %}
+<div class="modal fade" id="editModal_{{user.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-center"  style="max-width: 700px;">
+        <form action="/users/update/{{user.id}}/" method="POST" class="modal-content">
+            {% csrf_token %}
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Update User</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" value="{{user.username}}" name="username"
+                                id="username">
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" value="{{user.email}}" name="email" id="email">
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" name="password" id="password">
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <label for="passwordconfirm" class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control" name="passwordconfirm" id="passwordconfirm">
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <label for="role" class="form-label">Role</label>
+                            <select class="default-select form-control wide" name="role" id="role">
+                                {% for role in roles %}
+                                <option value="{{role.id}}" {% if role.id == user.role.id %} selected {% endif %}>
+                                    {{role.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-12">
+                        <div class="form-group">
+                            <label for="is_active">Is Active</label>
+                            <label class="switch">
+                                <input type="checkbox" name="is_active" id="is_active" {% if user.is_active %}checked{% endif %}>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-12">
+                        <div class="form-group">
+                            <label for="is_staff">Is Staff</label>
+                            <label class="switch">
+                                <input type="checkbox" name="is_staff" id="is_staff" {% if user.is_staff %}checked{% endif %}>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-12">
+                        <div class="form-group">
+                            <label for="is_superuser">Is Supseruser</label>
+                            <label class="switch">
+                                <input type="checkbox" name="is_superuser" id="is_superuser" {% if user.is_superuser %}checked{% endif %}>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger light" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endfor %}
+
+{% for user in users %}
+<!-- Modal -->
+<div class="modal fade" id="deleteModal_{{user.id}}">
+    <div class="modal-dialog modal-dialog-centered" user="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Your Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal">
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure to delete this user?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger light" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary"
+                    onclick="window.location.href='/users/delete/{{user.id}}/'">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endfor %}
+
+{% endblock %}

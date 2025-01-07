@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<!-- Mirrored from akademi.dexignlab.com/flask/demo// by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 24 Nov 2024 03:49:15 GMT -->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <!-- Mobile Specific -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Page Title Here -->
+    <title>Evana - {% block title %}{% endblock %}</title>
+
+    {% include 'admin/components/favicon.html' %}
+    {% include 'admin/components/css.html' %}
+
+</head>
+
+<body>
+    {% include 'admin/components/message.html' %}
+    {% include 'admin/components/loader.html' %}
+
+    <!--**********************************
+        Main wrapper start
+    ***********************************-->
+    <div id="main-wrapper">
+
+        {% include 'admin/components/nav_header.html' %}
+
+        {% include 'admin/components/header.html' %}
+
+        {% include 'admin/components/sidebar.html' %}
+
+        <!--**********************************
+            Content body start
+        ***********************************-->
+        <div class="content-body">
+            <div class="container-fluid">
+                {% block body %}{% endblock %}
+            </div>
+        </div>
+
+        <!--**********************************
+            Content body end
+        ***********************************-->
+
+       {% include 'admin/components/footer.html' %}
+
+
+        <!--**********************************
+            Footer end
+        ***********************************-->
+
+    </div>
+    <!--**********************************
+        Main wrapper end
+    ***********************************-->
+
+    {% include 'admin/components/js.html' %}
+
+</body>
+
+<!-- Mirrored from akademi.dexignlab.com/flask/demo// by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 24 Nov 2024 03:51:21 GMT -->
+
+</html>

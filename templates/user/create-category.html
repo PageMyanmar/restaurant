@@ -1,0 +1,35 @@
+{% extends 'user/components/base.html' %}
+
+{% block title %}Create Categories {% endblock %}
+
+{% block body %}
+
+<!--=============== BREADCRUMB ===============-->
+<section class="breadcrumb">
+    <ul class="breadcrumb__list flex container">
+        <li><a href="/" class="breadcrumb__link">Home</a></li>
+        <li><span class="breadcrumb__link">></span></li>
+        <li><a href="/categories/" class="breadcrumb__link">Categories</a></li>
+        <li><span class="breadcrumb__link">></span></li>
+        <li><span class="breadcrumb__link">Create</span></li>
+    </ul>
+</section>
+
+<section class="create section--lg">
+    <div class="create__container container grid">
+        <div class="create__form">
+            <h3 class="section__title text__center">Create Category</h3>
+
+            <form method="POST" enctype="multipart/form-data" action="/create-category/"class="form grid">
+                {% csrf_token %}
+                <input type="text" name="name" placeholder="Enter category name" required class="form__input">
+                <input type="file" name="image" required class="form__input">
+                <div class="form__btn">
+                    <button class="btn" type="submit">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

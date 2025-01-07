@@ -1,0 +1,692 @@
+{% extends 'admin/components/base.html' %}
+
+{% block title %} Product Create {% endblock %}
+
+{% block body %}
+{% load static %}
+
+<style>
+    .size-section,
+    .color-section {
+        display: flex;
+    }
+
+    .size-section .size-btn {
+        max-width: max-content;
+        border: none;
+    }
+
+    .color-section .color-btn {
+        border: none;
+        outline: none;
+        width: 3rem;
+        height: 3rem;
+        border-radius: 50%;
+    }
+
+    .size-btn.active {
+        background-color: var(--primary);
+        /* Blue background for selected */
+        color: #fff;
+    }
+
+    .color-btn.active {
+        border: 5px solid var(--primary);
+    }
+</style>
+
+<form method="POST" action="/products/create/" enctype="multipart/form-data">
+    {% csrf_token %}
+    <!-- =================================== Product Detail Start  ======================================== -->
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Product Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <label for="name" class="form-label text-primary">
+                                Name<span class="required">*</span></label>
+                            <input type="text" class="form-control" required name="name" id="name">
+
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-12">
+                        <div class="mb-3">
+                            <label for="regular" class="form-label text-primary">
+                                Regular Price<span class="required">*</span></label>
+                            <input type="number" class="form-control" required name="regular_price" id="regular">
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-12">
+                        <div class="mb-3">
+                            <label for="sale" class="form-label text-primary">
+                                Sale Price<span class="required">*</span></label>
+                            <input type="number" class="form-control" required name="sale_price" id="sale">
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-12">
+                        <div class="mb-3">
+                            <label for="stock" class="form-label text-primary">
+                                Stock<span class="required">*</span></label>
+                            <input type="number" class="form-control" required name="stock" id="stock">
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <label for="description" class="form-label text-primary">Description<span
+                                    class="required">*</span></label>
+                            <textarea class="form-control" id="description" required name="description"
+                                rows="6"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- =================================== Product Detail End  ======================================== -->
+
+    <!-- =================================== Category Section Start  ======================================== -->
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Categories</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="row category-section">
+                            {% for category in categories %}
+                            <div
+                                class="form-check custom-checkbox col-12 col-sm-4 col-lg-3 col-xl-2 d-inline-block mb-2">
+                                <input type="radio" class="form-check-input" id="category_{{forloop.counter}}"
+                                    name="category" value="{{category.id}}">
+                                <label class="form-check-label"
+                                    for="category_{{forloop.counter}}">{{category.name}}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="row">
+                            <button type="button" style="text-align: left;max-width: max-content;"
+                                class="btn btn-link text-primary mt-3 text-decoration-underline" data-bs-toggle="modal"
+                                data-bs-target="#addCategoryModal">Add new category</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Category Modal -->
+    <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addCategoryModalLabel">Add New Category</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="categoryName" class="form-label">Name</label>
+                                <input type="text" class="form-control" name="name" id="categoryName">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="categoryImage" class="form-label">Image</label>
+                                <div class="avatar-upload">
+                                    <div class="avatar-preview">
+                                        <div id="categoryPreview"
+                                            style="background-image: url({% static 'admin/images/no-image.png' %});">
+                                        </div>
+                                    </div>
+                                    <div class="change-btn mt-2 mb-lg-0 mb-3">
+                                        <input type='file' name="image" class="form-control d-none" id="categoryImage"
+                                            accept=".png, .jpg, .jpeg">
+                                        <label for="categoryImage"
+                                            class="dlab-upload mb-0 btn btn-primary btn-sm">Choose
+                                            File</label>
+                                        <a href="javascript:void" class="btn btn-danger light remove-img ms-2 btn-sm"
+                                            data-target="#categoryPreview" data-input="#categoryImage">Remove</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveCategory">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('saveCategory').addEventListener('click', function () {
+            var categoryName = document.getElementById('categoryName').value;
+            var categoryImage = document.getElementById('categoryImage').files[0];
+            var formData = new FormData();
+            formData.append('name', categoryName);
+            formData.append('image', categoryImage);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}'); // CSRF token
+
+            fetch('/add-category/', {
+                method: 'POST',
+                body: formData,
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.id) {
+                        var container = document.querySelector('.category-section'); // Target row containing categories
+                        var newCategory = `
+                <div class="form-check custom-checkbox col-12 col-sm-4 col-lg-3 col-xl-2 d-inline-block mb-2">
+                    <input type="radio" class="form-check-input" id="category_${data.id}" name="category" value="${data.id}">
+                    <label class="form-check-label" for="category_${data.id}">${data.name}</label>
+                </div>`;
+                        container.insertAdjacentHTML('afterbegin', newCategory); // Insert at the beginning
+                        $('#addCategoryModal').modal('hide'); // Close modal
+                        document.getElementById('categoryName').value = ''; // Reset input
+                        document.getElementById('categoryImage').value = ''; // Reset file input
+                    } else {
+                        alert('Error: ' + (data.error || 'Unable to save category'));
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        });
+
+    </script>
+    <!-- =================================== Category Section End  ======================================== -->
+
+    <!-- =================================== Brand Section Start  ======================================== -->
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Brands</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="row brand-section">
+                            {% for brand in brands %}
+                            <div
+                                class="form-check custom-checkbox col-12 col-sm-4 col-lg-3 col-xl-2 d-inline-block mb-2">
+                                <input type="radio" class="form-check-input" id="brand_{{forloop.counter}}" name="brand"
+                                    value="{{brand.id}}">
+                                <label class="form-check-label" for="brand_{{forloop.counter}}">{{brand.name}}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="row">
+                            <button type="button" style="text-align: left;max-width: max-content;"
+                                class="btn btn-link text-primary mt-3 text-decoration-underline" data-bs-toggle="modal"
+                                data-bs-target="#addBrandModal">Add new brand</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Brand Modal -->
+    <div class="modal fade" id="addBrandModal" tabindex="-1" aria-labelledby="addBrandModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addBrandModalLabel">Add New Brand</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="brandName" class="form-label">Name</label>
+                                <input type="text" class="form-control" name="name" id="brandName">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveBrand">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('saveBrand').addEventListener('click', function () {
+            var brandName = document.getElementById('brandName').value;
+            var formData = new FormData();
+            formData.append('name', brandName);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}'); // CSRF token
+
+            fetch('/add-brand/', {
+                method: 'POST',
+                body: formData,
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.id) {
+                        var container = document.querySelector('.brand-section'); // Target row containing categories
+                        var newBrand = `
+                <div class="form-check custom-checkbox col-12 col-sm-4 col-lg-3 col-xl-2 d-inline-block mb-2">
+                    <input type="radio" class="form-check-input" id="brand_${data.id}" name="brand" value="${data.id}">
+                    <label class="form-check-label" for="brand_${data.id}">${data.name}</label>
+                </div>`;
+                        container.insertAdjacentHTML('afterbegin', newBrand); // Insert at the beginning
+                        $('#addBrandModal').modal('hide'); // Close modal
+                        document.getElementById('brandName').value = ''; // Reset input
+                    } else {
+                        alert('Error: ' + (data.error || 'Unable to save brand'));
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        });
+
+    </script>
+
+    <!-- =================================== Brand Section End  ======================================== -->
+
+    <!-- =================================== Size Section Start  ======================================== -->
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Sizes</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="row size-section">
+                            {% for size in sizes %}
+                            <button type="button" class="btn btn-light m-1 size-btn" data-id="{{ size.id }}">
+                                {{ size.name }}
+                            </button>
+                            {% endfor %}
+                        </div>
+                        <div class="row">
+                            <button type="button" style="text-align: left;max-width: max-content;"
+                                class="btn btn-link text-primary mt-3 text-decoration-underline" data-bs-toggle="modal"
+                                data-bs-target="#addSizeModal">Add new size</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const sizeButtons = document.querySelectorAll('.size-btn');
+            const selectedSizes = new Set(); // To store selected sizes
+
+            sizeButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const sizeId = this.getAttribute('data-id');
+                    if (selectedSizes.has(sizeId)) {
+                        selectedSizes.delete(sizeId); // Unselect size
+                        this.classList.remove('active');
+                    } else {
+                        selectedSizes.add(sizeId); // Select size
+                        this.classList.add('active');
+                    }
+                    console.log(Array.from(selectedSizes)); // Log selected sizes
+                });
+            });
+        });
+
+    </script>
+
+    <!-- Add Size Modal -->
+    <div class="modal fade" id="addSizeModal" tabindex="-1" aria-labelledby="addSizeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addSizeModalLabel">Add New Size</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="sizeName" class="form-label">Name</label>
+                                <input type="text" class="form-control" name="name" id="sizeName">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveSize">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('saveSize').addEventListener('click', function () {
+            var sizeName = document.getElementById('sizeName').value;
+            var formData = new FormData();
+            formData.append('name', sizeName);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}'); // CSRF token
+
+            fetch('/add-size/', {
+                method: 'POST',
+                body: formData,
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.id) {
+                        var container = document.querySelector('.size-section'); // Target row containing categories
+                        var newSize = `
+                            <button type="button" class="btn btn-light m-1 size-btn" data-id="${data.id}">
+                                    ${data.name}
+                                </button>`;
+                        container.insertAdjacentHTML('afterbegin', newSize); // Insert at the beginning
+                        $('#addSizeModal').modal('hide'); // Close modal
+                        document.getElementById('sizeName').value = ''; // Reset input
+                    } else {
+                        alert('Error: ' + (data.error || 'Unable to save size'));
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        });
+
+    </script>
+
+    <!-- =================================== Size Section End  ======================================== -->
+
+    <!-- =================================== Color Section Start  ======================================== -->
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Colors</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="row color-section">
+                            {% for color in colors %}
+                            <button type="button" class="m-1 color-btn" style="background:{{color.name}};"
+                                data-id="{{ color.id }}"></button>
+                            {% endfor %}
+                        </div>
+                        <div class="row">
+                            <button type="button" style="text-align: left;max-width:max-content;"
+                                class="btn btn-link text-primary mt-3 text-decoration-underline" data-bs-toggle="modal"
+                                data-bs-target="#addColorModal">Add new color</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const colorButtons = document.querySelectorAll('.color-btn');
+            const selectedColors = new Set(); // To store selected colors
+
+            colorButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const colorId = this.getAttribute('data-id');
+                    if (selectedColors.has(colorId)) {
+                        selectedColors.delete(colorId); // Unselect color
+                        this.classList.remove('active');
+                    } else {
+                        selectedColors.add(colorId); // Select color
+                        this.classList.add('active');
+                    }
+                    console.log(Array.from(selectedColors)); // Log selected colors
+                });
+            });
+        });
+
+    </script>
+
+    <!-- Add Color Modal -->
+    <div class="modal fade" id="addColorModal" tabindex="-1" aria-labelledby="addColorModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addColorModalLabel">Add New Color</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="colorName" class="form-label">Name</label>
+                                <input type="text" class="form-control" name="name" id="colorName">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveColor">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('saveColor').addEventListener('click', function () {
+            var colorName = document.getElementById('colorName').value;
+            var formData = new FormData();
+            formData.append('name', colorName);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}'); // CSRF token
+
+            fetch('/add-color/', {
+                method: 'POST',
+                body: formData,
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.id) {
+                        var container = document.querySelector('.color-section'); // Target row containing categories
+                        var newColor = `
+                            <button type="button" class="m-1 color-btn" style="background:${data.name};"
+                                data-id="${data.id}"></button>`;
+                        container.insertAdjacentHTML('afterbegin', newColor); // Insert at the beginning
+                        $('#addColorModal').modal('hide'); // Close modal
+                        document.getElementById('colorName').value = ''; // Reset input
+                    } else {
+                        alert('Error: ' + (data.error || 'Unable to save color'));
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        });
+
+    </script>
+
+    <!-- =================================== Color Section End  ======================================== -->
+
+
+    <!-- =================================== Featured Image Section Start  ======================================== -->
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Featured Image</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="avatar-upload">
+                            <div class="avatar-preview">
+                                <div id="featuredPreview"
+                                    style="background-image: url({% static 'admin/images/no-image.png' %});"></div>
+                            </div>
+                            <div class="change-btn mt-2 mb-lg-0 mb-3">
+                                <input type='file' name="featured_image" class="form-control d-none" id="featured_image"
+                                    accept=".png, .jpg, .jpeg">
+                                <label for="featured_image" class="dlab-upload mb-0 btn btn-primary btn-sm">Choose
+                                    File</label>
+                                <a href="javascript:void" class="btn btn-danger light remove-img ms-2 btn-sm"
+                                    data-target="#featuredPreview" data-input="#featured_image">Remove</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- =================================== Featured Image Section End  ======================================== -->
+
+    <!-- =================================== Image Gallery Section Start  ======================================== -->
+    <div class="col-xl-12">
+        <div class="card ">
+            <div class="card-header">
+                <h4 class="card-title">Gallery</h4>
+            </div>
+            <div class="card-body p-3">
+                <div id="lightgallery-1" class="row g-2 gallery-section">
+                    {% for gallery in galleries %}
+                    <a href="{{gallery.image.url}}" data-exthumbimage="{{gallery.image.url}}"
+                        data-src="{{gallery.image.url}}" class="col-1">
+                        <img src="{{gallery.image.url}}" alt="" style="width:100%;height: 10rem;object-fit: contain;">
+                    </a>
+                    {% endfor %}
+                </div>
+                <div class="row">
+                    <button type="button" style="text-align: left;max-width:max-content;"
+                        class="btn btn-link text-primary mt-3 text-decoration-underline" data-bs-toggle="modal"
+                        data-bs-target="#addGalleryModal">Add new gallery</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Image Gallery -->
+
+    <div class="modal fade" id="addGalleryModal" tabindex="-1" aria-labelledby="addGalleryModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addGalleryModalLabel">Add New Gallery</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="gallery" class="form-label">Image</label>
+                                <div class="avatar-upload">
+                                    <div class="avatar-preview">
+                                        <div id="galleryPreview"
+                                            style="background-size:contain;width:100%;height:20rem;background-image: url({% static 'admin/images/no-image.png' %});">
+                                        </div>
+                                    </div>
+                                    <div class="change-btn mt-2 mb-lg-0 mb-3">
+                                        <input type='file' name="image" class="form-control d-none" id="gallery"
+                                            accept=".png, .jpg, .jpeg">
+                                        <label for="gallery" class="dlab-upload mb-0 btn btn-primary btn-sm">Choose
+                                            File</label>
+                                        <a href="javascript:void" class="btn btn-danger light remove-img ms-2 btn-sm"
+                                            data-target="#galleryPreview" data-input="#gallery">Remove</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveGallery">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('saveGallery').addEventListener('click', function () {
+            var gallery = document.getElementById('gallery').files[0];
+            var formData = new FormData();
+            formData.append('image', gallery);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}'); // CSRF token
+
+            fetch('/add-gallery/', {
+                method: 'POST',
+                body: formData,
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.id) {
+                        var container = document.querySelector('.gallery-section'); // Target row containing categories
+                        var newGallery = `
+                            <a href="${data.image}" data-exthumbimage="${data.image}"
+                                data-src="${data.image}" class="col-1">
+                                <img src="${data.image}" alt="" style="width:100%;height: 10rem;object-fit: contain;">
+                            </a>`;
+                        container.insertAdjacentHTML('afterbegin', newGallery); // Insert at the beginning
+                        $('#addGalleryModal').modal('hide'); // Close modal
+                        document.getElementById('gallery').value = ''; // Reset file input
+                    } else {
+                        alert('Error: ' + (data.error || 'Unable to save gallery'));
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        });
+
+    </script>
+    <!-- =================================== Image Gallery Section End  ======================================== -->
+
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Save and Publish</h5>
+            </div>
+            <div class="card-body">
+                <div class="float-end">
+                    <button class="btn btn-primary" type="submit">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        function readURL(input, previewId) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $(previewId).css('background-image', 'url(' + e.target.result + ')');
+                    $(previewId).hide();
+                    $(previewId).fadeIn(650);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Image upload handling
+        $("#categoryImage").change(function () {
+            readURL(this, '#categoryPreview');
+        });
+        $("#gallery").change(function () {
+            readURL(this, '#galleryPreview');
+        });
+        $("#featured_image").change(function () {
+            readURL(this, '#featuredPreview');
+        })
+
+        // Remove image
+        $('.remove-img').on('click', function () {
+            var target = $(this).data('target');
+            var imageUrl = "{% static 'admin/images/no-image.png' %}";
+            $(target).css('background-image', 'url(' + imageUrl + ')');
+            var inputId = $(this).data('input');
+            $(inputId).val('');
+        });
+    });
+</script>
+
+{% endblock %}

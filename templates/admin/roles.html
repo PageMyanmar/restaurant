@@ -1,0 +1,216 @@
+{% extends 'admin/components/base.html' %}
+
+{% block title %}Roles{% endblock %}
+{% load static %}
+{% block body %}
+
+<style>
+    /* Toggle switch style */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 20px;
+    }
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 34px;
+    }
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 14px;
+        width: 14px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+    input:checked + .slider {
+        background-color: var(--primary);
+    }
+    input:checked + .slider:before {
+        transform: translateX(20px);
+    }
+</style>
+
+<div class="col-xl-12">
+    <div class="card" id="accordion-three">
+        <div class="card-header flex-wrap d-flex justify-content-between px-3">
+            <div>
+                <h4 class="card-title">Role Table</h4>
+            </div>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
+                + Add New Role
+            </button>
+        </div>
+
+        <!-- /tab-content -->
+        <div class="tab-content" id="myTabContent-2">
+            <div class="tab-pane fade show active" id="withoutSpace" role="tabpanel" aria-labelledby="home-tab-2">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table id="example3" class="display table" style="min-width: 845px">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Name</th>
+                                    <th>Permission</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for role in roles %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+
+                                    <td>{{role.name}}</td>
+                                    <td style="max-width: 200px;white-space: wrap;">
+                                        {% if role.permissions.all %}
+                                        {% for perm in role.permissions.all %}
+                                        <span class="badge light badge-success">{{ perm.name }}</span>
+                                        {% empty %}
+                                        No permissions
+                                        {% endfor %}
+                                        {% else %}
+                                        No permissions
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <button data-bs-toggle="modal"
+                                            data-bs-target="#editModal_{{role.id}}"
+                                                class="btn btn-primary shadow btn-xs sharp me-1"><i
+                                                    class="fas fa-pencil-alt"></i></button>
+                                            <button data-bs-toggle="modal"
+                                                data-bs-target="#deleteModal_{{role.id}}"
+                                                class="btn btn-danger shadow btn-xs sharp"><i
+                                                    class="fa fa-trash"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /tab-content -->
+
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-center" style="max-width: 800px;">
+        <form action="/roles/create/" method="POST" class="modal-content">
+            {% csrf_token %}
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Add New Role</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <label for="exampleFormControlInput1" class="form-label">Name</label>
+                            <input type="text" class="form-control" name="name" id="exampleFormControlInput1">
+                        </div>
+                    </div>
+                    {% for permission in permissions %}
+                    <div class="col-12 col-sm-6 d-flex align-items-center" style="gap:1rem;margin-bottom: 1rem;">
+                        <label class="switch">
+                            <input type="checkbox" id="perm_{{ permission.id }}" name="permissions"
+                                value="{{ permission.id }}">
+                            <span class="slider"></span>
+                        </label>
+                        <label for="perm_{{ permission.id }}" class="text-black">{{ permission.name }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger light" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% for role in roles %}
+<div class="modal fade" id="editModal_{{role.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-center"  style="max-width: 800px;">
+        <form action="/roles/update/{{role.id}}/" method="POST" class="modal-content">
+            {% csrf_token %}
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Update Role</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <label for="exampleFormControlInput1" class="form-label">Name</label>
+                            <input type="text" class="form-control" value="{{role.name}}" name="name" id="exampleFormControlInput1">
+                        </div>
+                    </div>
+                    {% for permission in permissions %}
+                    <div class="col-12 col-sm-6 d-flex align-items-center" style="gap:1rem;margin-bottom: 1rem;">
+                        <label class="switch">
+                            <input type="checkbox" {% if permission in role.permissions.all %} checked {% endif %} id="perm_{{ permission.id }}" name="permissions"
+                                value="{{ permission.id }}">
+                            <span class="slider"></span>
+                        </label>
+                        <label for="perm_{{ permission.id }}" class="text-black">{{ permission.name }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger light" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endfor %}
+
+{% for role in roles %}
+<!-- Modal -->
+<div class="modal fade" id="deleteModal_{{role.id}}">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Your Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal">
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure to delete this role?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger light" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary"
+                    onclick="window.location.href='/roles/delete/{{role.id}}/'">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endfor %}
+
+{% endblock %}

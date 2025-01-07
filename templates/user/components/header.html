@@ -1,0 +1,75 @@
+{% load static %}
+<!--=============== HEADER ===============-->
+
+<nav class="nav container">
+    <a href="/" class="nav__logo">
+        <img src="{% static 'user/img/logo.svg' %}" alt="" class="nav__logo-img">
+    </a>
+
+    <div class="nav__menu" id="nav-menu">
+        <div class="nav__menu-top">
+            <a href="/" class="nav__menu-logo">
+                <img src="{% static 'user/img/logo.svg' %}" alt="">
+            </a>
+
+            <div class="nav__close" id="nav-close">
+                <i class="fi fi-rs-cross-small"></i>
+            </div>
+        </div>
+
+        <ul class="nav__list">
+
+            <li class="nav__item">
+                <a href="/" class="nav__link {% if request.path == '/'%} active-link {% endif %}">Home</a>
+            </li>
+
+            <li class="nav__item">
+                <a href="/tables/"
+                    class="nav__link {% if request.path == '/tables/'%} active-link {% endif %}">Tables</a>
+            </li>
+
+            <li class="nav__item">
+                <a href="/categories/"
+                    class="nav__link {% if request.path == '/categories/'%} active-link {% endif %}">Categories</a>
+            </li>
+
+            <li class="nav__item">
+                <a href="/products/"
+                    class="nav__link {% if request.path == '/products/'%} active-link {% endif %}">Products</a>
+            </li>
+
+            <li class="nav__item">
+                <a href="/contact/"
+                    class="nav__link {% if request.path == '/contact/'%} active-link {% endif %}">Contact Us</a>
+            </li>
+
+            <li class="nav__item">
+                {% if request.user.is_authenticated %}
+                <a href="/my-account/"
+                    class="nav__link {% if request.path == '/my-account/'%} active-link {% endif %}">My Account</a>
+                {% else %}
+                <a href="/login/" class="nav__link {% if request.path == '/login/'%} active-link {% endif %}">Login</a>
+                {% endif %}
+            </li>
+
+        </ul>
+
+        <div class="header__search">
+            <input type="text" placeholder="Search for items..." class="form__input">
+            <button class="search__btn">
+                <img src="{% static 'user/img/search.png' %}" alt="">
+            </button>
+        </div>
+    </div>
+
+    <div class="header__user-actions">
+        <a href="/carts/{{ table_id }}/" class="header__action-btn">
+            <img src="{% static 'user/img/icon-cart.svg' %}" alt="Cart">
+            <span class="count cart-count">{{ cart_count }}</span>
+        </a>
+        
+        <div class="header__action-btn nav__toggle" id="nav-toggle">
+            <img src="{% static 'user/img/menu-burger.svg' %}" alt="">
+        </div>
+    </div>
+</nav>

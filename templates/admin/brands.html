@@ -1,0 +1,147 @@
+{% extends 'admin/components/base.html' %}
+{% load static %}
+
+{% block title %}Brands Table{% endblock %}
+
+{% block body %}
+
+<div class="col-xl-12">
+    <div class="card" id="accordion-three">
+        <div class="card-header flex-wrap d-flex justify-content-between px-3">
+            <div>
+                <h4 class="card-title">Brand Table</h4>
+            </div>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
+                + Add New Brand
+            </button>
+        </div>
+
+        <!-- /tab-content -->
+        <div class="tab-content" id="myTabContent-2">
+            <div class="tab-pane fade show active" id="withoutSpace" role="tabpanel" aria-labelledby="home-tab-2">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table id="example3" class="display table" style="min-width: 845px">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Name</th>
+                                    <th>Creator</th>
+                                    <th>Creating Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for brand in brands %}
+                                <tr>
+                                    <td>{{forloop.counter}}</td>
+                                    <td>{{brand.name}}</td>
+                                    <td>{{brand.creator.username}}</td>
+                                    <td>{{brand.created_at}}</td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <a href="#" data-bs-toggle="modal"
+                                                data-bs-target="#editModal_{{brand.id}}"
+                                                class="btn btn-primary shadow btn-xs sharp me-1"><i
+                                                    class="fas fa-pencil-alt"></i></a>
+                                            <a href="#" data-bs-toggle="modal"
+                                                data-bs-target="#deleteModel_{{brand.id}}"
+                                                class="btn btn-danger shadow btn-xs sharp"><i
+                                                    class="fa fa-trash"></i></a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /tab-content -->
+
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-center">
+        <form action="/brands/create/" enctype="multipart/form-data" method="POST" class="modal-content">
+            {% csrf_token %}
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Add New Brand</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <label for="exampleFormControlInput1" class="form-label">Name</label>
+                            <input type="text" class="form-control" name="name" id="exampleFormControlInput1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger light" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% for brand in brands %}
+<div class="modal fade" id="editModal_{{brand.id}}" tabindex="-1" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-center">
+        <form action="/brands/update/{{brand.id}}/" method="POST" enctype="multipart/form-data" class="modal-content">
+            {% csrf_token %}
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Update Brand</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <label for="exampleFormControlInput1" class="form-label">Name</label>
+                            <input type="text" class="form-control" value="{{brand.name}}" name="name"
+                                id="exampleFormControlInput1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger light" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endfor %}
+
+{% for brand in brands %}
+<!-- Modal -->
+<div class="modal fade" id="deleteModel_{{brand.id}}">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Your Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal">
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure to delete this brand?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger light" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary"
+                    onclick="window.location.href='/brands/delete/{{brand.id}}/'">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endfor %}
+
+{% endblock %}
