@@ -1,0 +1,69 @@
+{% extends 'components/base.html' %}
+
+{% block title %}Invoice{% endblock %}
+{% load static %}
+{% block body %}
+
+<!--=============== BREADCRUMB ===============-->
+<section class="breadcrumb">
+  <ul class="breadcrumb__list flex container">
+    <li><a href="/" class="breadcrumb__link">Home</a></li>
+    <li><span class="breadcrumb__link">></span></li>
+    <li><span class="breadcrumb__link">Invoices</span></li>
+  </ul>
+</section>
+
+<!--=============== CHECKOUT ===============-->
+<section class="checkout section--lg container">
+  <div class="search__form">
+    <input type="text" placeholder="Search for invoices..." class="form__input">
+    <button class="search__btn">
+      <img src="{% static 'img/search.png' %}" alt="">
+    </button>
+  </div>
+  <div class="checkout__container grid">
+
+    {% for invoice_group in grouped_invoices %}
+    <div class="checkout__group">
+      <h3 class="section__title">{{invoice_group.invoice.created_at}}</h3>
+      <table class="order__table">
+        <tr>
+          <th colspan="2">Products</th>
+          <th>Total</th>
+        </tr>
+        {% for item in invoice_group.items %}
+        <tr>
+          <td>
+            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="order__img">
+          </td>
+          <td>
+            <h3 class="table__title">{{ item.product.name }}</h3>
+            <p class="table__quantity">x {{ item.quantity }}</p>
+          </td>
+
+          <td>
+            <span class="table__price">{{ item.total_price }} MMK</span>
+          </td>
+        </tr>
+        {% endfor %}
+
+        <tr>
+          <td><span class="order__subtitle">Payment Method</span></td>
+          <td colspan="2"><span class="order__grand-total">{{ invoice_group.invoice.payment.name }}</span></td>
+        </tr>
+
+        <tr>
+          <td><span class="order__subtitle">Total</span></td>
+          <td colspan="2"><span class="order__grand-total">{{ invoice_group.invoice.total }} MMK</span></td>
+        </tr>
+
+      </table>
+    </div>
+    <div class="divider">
+      <i class="fi fi-rs-fingerprint"></i>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% endblock %}

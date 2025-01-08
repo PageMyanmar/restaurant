@@ -1,0 +1,35 @@
+{% extends 'components/base.html' %}
+
+{% block title %}Update Payment {% endblock %}
+
+{% block body %}
+
+<!--=============== BREADCRUMB ===============-->
+<section class="breadcrumb">
+    <ul class="breadcrumb__list flex container">
+        <li><a href="/" class="breadcrumb__link">Home</a></li>
+        <li><span class="breadcrumb__link">></span></li>
+        <li><a href="/payments/" class="breadcrumb__link">Payments</a></li>
+        <li><span class="breadcrumb__link">></span></li>
+        <li><span class="breadcrumb__link">Update</span></li>
+    </ul>
+</section>
+
+<section class="update section--lg">
+    <div class="update__container container grid">
+        <div class="update__form">
+            <h3 class="section__title text__center">Update Payment</h3>
+
+            <form action="/update-payment/{{payment.id}}/" method="POST" class="form grid">
+                {% csrf_token %}
+                <input type="text" name="name" value="{{payment.name}}" placeholder="Enter payment Name" required class="form__input">
+                <input type="number" name="number" value="{{payment.number}}" placeholder="Enter payment Number" required class="form__input">
+                <div class="form__btn">
+                    <button class="btn" type="submit">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

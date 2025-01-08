@@ -1,0 +1,40 @@
+{% extends 'components/base.html' %}
+
+{% block title %}Users{% endblock %}
+
+{% block body %}
+
+
+<!--=============== BREADCRUMB ===============-->
+<section class="breadcrumb">
+    <ul class="breadcrumb__list flex container">
+        <li><a href="/" class="breadcrumb__link">Home</a></li>
+        <li><span class="breadcrumb__link">></span></li>
+        <li><span class="breadcrumb__link">Users</span></li>
+    </ul>
+</section>
+
+<!--=============== CART ===============-->
+<section class="table__cards section--lg container">
+    <button class="btn btn-md" style="margin-bottom: 3rem;" onclick="window.location.href='/create-user/'">+ Create User</button>
+    <div class="table__card--group grid">
+        {% for user in users %}
+        <div class="table__card">
+            <div class="payment__card--banner">
+                <h4 class="payment__card--title">{{user.username}}</h4>
+            </div>
+            <div class="payment__btn flex">
+                <button class="btn btn-md" onclick="window.location.href='/update-user/{{user.id}}/'">Update</button>
+                <button class="btn btn-md delete" onclick="window.location.href='/delete-user/{{user.id}}/'">Delete</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="divider">
+        <i class="fi fi-rs-fingerprint"></i>
+    </div>
+
+</section>
+
+{% endblock %}

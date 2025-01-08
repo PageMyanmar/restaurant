@@ -1,0 +1,52 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/sweetalert2.min.css' %}">
+<!-- SweetAlert2 JavaScript -->
+<script src="{% static 'js/sweetalert2.all.min.js' %}"></script>
+
+<!-- Django Messages to SweetAlert2 -->
+<script>
+    {% if messages %}
+    {% for message in messages %}
+    // Determine the icon, background, and color based on the message level tag
+    let icon, background, textColor;
+    let messageTag = '{{ message.tags|escapejs }}'.toLowerCase(); // Get the actual tag name from settings.py
+
+    // Debugging output
+    console.log("Message Tag:", messageTag);
+
+    if (messageTag === 'alert-success') {
+        icon = 'success';
+        background = '#155724';
+        textColor = '#d4edda';
+    } else if (messageTag === 'alert-danger') {
+        icon = 'error';
+        background = '#721c24';
+        textColor = '#f8d7da';
+    } else if (messageTag === 'alert-warning') {
+        icon = 'warning';
+        background = '#856404';
+        textColor = '#fff3cd';
+    } else if (messageTag === 'alert-info') {
+        icon = 'info';
+        background = '#0c5460';
+        textColor = '#d1ecf1';
+    } else {
+        icon = 'info';
+        background = '#0c5460';
+        textColor = '#d1ecf1';
+    }
+
+    Swal.fire({
+        toast: true,
+        position: 'top-end', // Adjust position as needed
+        icon: icon,
+        title: '{{ message|escapejs }}',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        background: background, // Use the determined background color
+        color: textColor // Use the determined text color
+    });
+    {% endfor %}
+    {% endif %}
+</script>

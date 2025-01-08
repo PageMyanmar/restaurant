@@ -16,55 +16,53 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path,re_path,include
+from django.urls import path
 from django.conf.urls.static import static
 from django.conf import settings
-from views.user import auth_view,page_view,cart_view
-from views.admin import auth_views,role_views,page_views,user_views,category_views,product_views,table_views,payment_views
+from views import auth_views,cart_views,category_views,page_views,payment_views,product_views,role_views,table_views,user_views
 
 urlpatterns = [
     path("abcde/", admin.site.urls),
     # re_path(r'^.*/$', Error404),
 
     # ==================== USER URLS ====================
-    path('',page_view.Index),
-    path('trncs/',auth_view.Login),
-    path('register/',auth_view.Register),
-    path('logout/',auth_view.Logout),
-    path('subscribe/',auth_view.Subscribe),
-    path('get-counts/', page_view.GetCounts),
-    path('my-account/',page_view.MyAccount),
-    path('submit-review/',page_view.SubmitReview),
-    path('shop/',page_view.Products),
-    path('contact/',page_view.Contact),
-    path('category/<int:id>/products/<int:t_id>/',page_view.ProductsByCategory),
-    path('update-profile/',auth_view.UpdateProfile),
-    path('change-password/',auth_view.ChangePassword),
+    path('',page_views.Index),
+    path('trncs/',auth_views.Login),
+    path('register/',auth_views.Register),
+    path('logout/',auth_views.Logout),
+    path('subscribe/',auth_views.Subscribe),
+    path('get-counts/', page_views.GetCounts),
+    path('my-account/',page_views.MyAccount),
+    path('submit-review/',page_views.SubmitReview),
+    path('shop/',page_views.Products),
+    path('contact/',page_views.Contact),
+    path('category/<int:id>/products/<int:t_id>/',page_views.ProductsByCategory),
 
     # Cart
-    path('carts/<int:id>/',cart_view.Carts),
-    path('add-to-cart/<int:p_id>/<int:t_id>/', cart_view.AddToCart),
-    path('remove-from-cart/<int:id>/', cart_view.RemoveFromCart),
+    path('carts/<int:id>/',cart_views.Carts),
+    path('add-to-cart/<int:p_id>/<int:t_id>/', cart_views.AddToCart),
+    path('remove-from-cart/<int:id>/', cart_views.RemoveFromCart),
+    path('update-cart/<int:id>/', cart_views.UpdateCart),
 
     # Products
-    path('products/details/<int:id>/',page_view.ProductDetails),
+    path('products/details/<int:id>/',page_views.ProductDetails),
 
     # ==================== ADMIN URLS ====================
-    path('khaing/',auth_views.AdminLogin),
-    path('dashboard/',page_views.Dashboard),
-    path('admin_logout/',auth_views.AdminLogout),
 
     # Roles
     path('roles/',role_views.Roles),
-    path('roles/create/',role_views.RoleCreate),
-    path('roles/update/<int:id>/',role_views.RoleUpdate),
-    path('roles/delete/<int:id>/',role_views.RoleDelete),
+    path('create-role/',role_views.CreateRole),
+    path('update-role/<int:id>/',role_views.UpdateRole),
+    path('delete-role/<int:id>/',role_views.DeleteRole),
+
+    # Invoices
+    path('invoices/',page_views.Invoices),
 
     # Users
     path('users/',user_views.Users),
-    path('users/create/',user_views.UserCreate),
-    path('users/update/<uuid:id>/',user_views.UserUpdate),
-    path('users/delete/<uuid:id>/',user_views.UserDelete),
+    path('create-user/',user_views.CreateUser),
+    path('update-user/<uuid:id>/',user_views.UpdateUser),
+    path('delete-user/<uuid:id>/',user_views.DeleteUser),
 
     # Categories
     path('categories/',category_views.Categories),
@@ -84,7 +82,8 @@ urlpatterns = [
     path('update-table/<int:id>/',table_views.UpdateTable),
     path('delete-table/<int:id>/',table_views.DeleteTable),
     path('order/<int:id>/',table_views.Order),
-    path('order-confirm/<int:id>/',cart_view.OrderConfirm),
+    path('order-confirm/<int:id>/',cart_views.OrderConfirm),
+    path('checkout/<int:id>/',table_views.Checkout),
 
     #Payment
     path('payments/',payment_views.Payments),

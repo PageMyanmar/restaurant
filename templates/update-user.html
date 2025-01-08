@@ -1,0 +1,107 @@
+{% extends 'components/base.html' %}
+
+{% block title %}Update User {% endblock %}
+
+{% block body %}
+
+<style>
+    /* Toggle switch style */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 20px;
+    }
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 34px;
+    }
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 14px;
+        width: 14px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+    input:checked + .slider {
+        background-color: var(--first-color);
+    }
+    input:checked + .slider:before {
+        transform: translateX(20px);
+    }
+</style>
+
+<!--=============== BREADCRUMB ===============-->
+<section class="breadcrumb">
+    <ul class="breadcrumb__list flex container">
+        <li><a href="/" class="breadcrumb__link">Home</a></li>
+        <li><span class="breadcrumb__link">></span></li>
+        <li><a href="/users/" class="breadcrumb__link">Users</a></li>
+        <li><span class="breadcrumb__link">></span></li>
+        <li><span class="breadcrumb__link">Update</span></li>
+    </ul>
+</section>
+
+<section class="update section--lg">
+    <div class="update__container container grid">
+        <div class="update__form">
+            <h3 class="section__title text__center">Update User</h3>
+
+            <form method="POST" enctype="multipart/form-data" action="/update-user/{{user.id}}/" class="form grid">
+                {% csrf_token %}
+                <input type="text" value="{{user.username}}" name="username" placeholder="Enter user name" required class="form__input">
+                <input type="email" value="{{user.email}}" name="email" placeholder="Enter user email" required class="form__input">
+                <input type="password" name="password" placeholder="Enter user password"  class="form__input">
+                <input type="password" name="passwordconfirm" placeholder="Confirm user password" 
+                    class="form__input">
+                <select name="role" class="form__input">
+                    {% for role in roles %}
+                    <option value="{{role.id}}" {% if role.id == user.role.id %} selected {% endif %}>{{role.name}}</option>
+                    {% endfor %}
+                </select>
+                <div>
+                    <label for="is_active">Is Active</label>
+                    <label class="switch">
+                        <input type="checkbox"  {% if user.is_active %}checked{% endif %} name="is_active" id="is_active">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div>
+                    <label for="is_staff">Is Staff</label>
+                    <label class="switch">
+                        <input type="checkbox"  {% if user.is_staff %}checked{% endif %} name="is_staff" id="is_staff">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div>
+                    <label for="is_superuser">Is Superuser</label>
+                    <label class="switch">
+                        <input type="checkbox"  {% if user.is_superuser %}checked{% endif %} name="is_superuser" id="is_superuser">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="form__btn">
+                    <button class="btn" type="submit">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

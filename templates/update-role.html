@@ -1,0 +1,88 @@
+{% extends 'components/base.html' %}
+
+{% block title %}Update Role {% endblock %}
+
+{% block body %}
+
+<style>
+    /* Toggle switch style */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 20px;
+    }
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 34px;
+    }
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 14px;
+        width: 14px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+    input:checked + .slider {
+        background-color: var(--first-color);
+    }
+    input:checked + .slider:before {
+        transform: translateX(20px);
+    }
+</style>
+<!--=============== BREADCRUMB ===============-->
+<section class="breadcrumb">
+    <ul class="breadcrumb__list flex container">
+        <li><a href="/" class="breadcrumb__link">Home</a></li>
+        <li><span class="breadcrumb__link">></span></li>
+        <li><a href="/roles/" class="breadcrumb__link">Roles</a></li>
+        <li><span class="breadcrumb__link">></span></li>
+        <li><span class="breadcrumb__link">Update</span></li>
+    </ul>
+</section>
+
+<section class="update section--lg">
+    <div class="update__container role container grid">
+        <div class="update__form">
+            <h3 class="section__title text__center">Update Role</h3>
+
+            <form method="POST" enctype="multipart/form-data" action="/update-role/{{role.id}}/"class="form grid">
+                {% csrf_token %}
+                <input type="text" name="name" value="{{role.name}}" placeholder="Enter role name" required class="form__input">
+                <div class="grid form__group">
+                    {% for permission in permissions %}
+                    <div>
+                        <label class="switch">
+                            <input type="checkbox" {% if permission in role.permissions.all %} checked {% endif %} id="perm_{{ permission.id }}" name="permissions"
+                                value="{{ permission.id }}">
+                            <span class="slider"></span>
+                        </label>
+                        <label for="perm_{{ permission.id }}" class="text-black">{{ permission.name }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="form__btn">
+                    <button class="btn" type="submit">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

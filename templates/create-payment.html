@@ -1,0 +1,35 @@
+{% extends 'components/base.html' %}
+
+{% block title %}Create Payment {% endblock %}
+
+{% block body %}
+
+<!--=============== BREADCRUMB ===============-->
+<section class="breadcrumb">
+    <ul class="breadcrumb__list flex container">
+        <li><a href="/" class="breadcrumb__link">Home</a></li>
+        <li><span class="breadcrumb__link">></span></li>
+        <li><a href="/payments/" class="breadcrumb__link">Payments</a></li>
+        <li><span class="breadcrumb__link">></span></li>
+        <li><span class="breadcrumb__link">Create</span></li>
+    </ul>
+</section>
+
+<section class="create section--lg">
+    <div class="create__container container grid">
+        <div class="create__form">
+            <h3 class="section__title text__center">Create Payment</h3>
+
+            <form action="/create-payment/" method="POST" class="form grid">
+                {% csrf_token %}
+                <input type="text" name="name" placeholder="Enter payment Name" required class="form__input">
+                <input type="number" name="number" placeholder="Enter payment Number" required class="form__input">
+                <div class="form__btn">
+                    <button class="btn" type="submit">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

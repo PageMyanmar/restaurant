@@ -1,0 +1,244 @@
+{% extends 'components/base.html' %}
+
+{% block title %}Carts{% endblock %}
+
+{% block body %}
+
+<!--=============== BREADCRUMB ===============-->
+<section class="breadcrumb">
+    <ul class="breadcrumb__list flex container">
+        <li><a href="/" class="breadcrumb__link">Home</a></li>
+        <li><span class="breadcrumb__link">></span></li>
+        <li><span class="breadcrumb__link">Shop</span></li>
+        <li><span class="breadcrumb__link">></span></li>
+        <li><span class="breadcrumb__link">Cart</span></li>
+    </ul>
+</section>
+
+<!--=============== CART ===============-->
+<section class="products__cards section--lg container">
+    <div class="go__back">
+        <a href="/order/{{table_id}}/"  class="lnr lnr-arrow-left"></a>
+    </div>
+    <div class="flex" style="justify-content: space-between;align-items: center;margin-bottom: 2rem;">
+        <button class="btn btn--md {% if all_ordered %}disabled{% endif %}"
+            onclick="window.location.href='/order-confirm/{{table_id}}/'" {% if all_ordered %}disabled{% endif %}>Order Confirm</button>
+        <button class="btn btn--md {% if not all_ordered %}disabled{% endif %}"
+        onclick="window.location.href='/checkout/{{table_id}}/'" {% if not all_ordered %}disabled{% endif %}>Checkout</button>
+    </div>
+    <div class="products__card--container grid">
+        {% for cart in carts %}
+        <div class="product__card--item">
+            <div class="product__card--banner">
+                <div class="product__card--image">
+                    <img src="{{ cart.product.image.url }}" alt="{{ cart.product.name }}" class="product__card--img">
+                </div>
+                <div class="product__card--content">
+                    <span class="product__card--category">{{ cart.product.category.name }}</span>
+                    <h3 class="product__card--title">{{ cart.product.name }}</h3>
+                    <span class="product__card--quantity">Quantity : ({{ cart.quantity }})</span>
+                    <span class="product__card--price new__price">Price : {{ cart.product.price }} MMK</span>
+                    <span class="product__card--subtotal">Subtotal : <span class="item-subtotal">{{ cart.total_price }}</span>
+                        MMK</span>
+                    <p>{{ cart.note }}</p>
+                </div>
+                {% if cart.status == False %}
+                <div class="product__card--actions flex">
+                    <!-- Update Button -->
+                    <button class="btn btn--sm update-cart" data-cart-id="{{ cart.id }}"
+                        data-cart-name="{{ cart.product.name }}"
+                        data-cart-price="{{ cart.product.price }}">Update</button>
+                    <!-- Remove Button -->
+                    <button class="btn btn--sm delete delete-cart"
+                        onclick="window.location.href='/remove-from-cart/{{cart.id}}/'">Remove</button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <h1 class="cart__total--price">Total Price : <span>{{all_total}} MMK</span></h1>
+</section>
+
+{% for cart in carts %}
+<!-- Modal -->
+<div id="cartModal_{{cart.id}}" class="modal">
+    <div class="modal-content">
+        <span class="close" data-modal-id="cartModal_{{cart.id}}">&times;</span>
+        <form action="/update-cart/{{cart.id}}/" method="POST" class="form" id="addToCartForm_{{cart.id}}">
+            {% csrf_token %}
+            <input type="hidden" name="cart_id" id="cartId_{{cart.id}}">
+            <h3 id="cartName_{{cart.id}}" class="section__title">{{cart.name}}</h3>
+            <div class="product__card--image">
+                <img src="{{ cart.product.image.url }}" alt="{{ cart.product.name }}" class="product__card--img">
+            </div>
+            <!-- Inside your modal -->
+            <div class="form-group">
+                <div class="quantity_controls">
+                    <button type="button" class="decrease-quantity btn btn-es">-</button>
+                    <input type="number" id="quantity_{{cart.id}}" class="form__input" value="{{cart.quantity}}"
+                        name="quantity" required min="1">
+                    <button type="button" class="increase-quantity btn btn-es">+</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="note_{{cart.id}}">Note</label>
+                <textarea id="note_{{cart.id}}" placeholder="Add your note (optional)" class="form__input textarea"
+                    name="note">{{cart.note}}</textarea>
+            </div>
+            <button type="submit" class="btn btn-sm">Update Cart</button>
+        </form>
+    </div>
+</div>
+{% endfor %}
+
+<!-- JavaScript to handle modal and form actions -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Open modal when "Add to Cart" button is clicked
+        const addToCartButtons = document.querySelectorAll(".update-cart");
+        addToCartButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                const cartId = this.getAttribute("data-cart-id");
+                const cartName = this.getAttribute("data-cart-name");
+                const cartPrice = this.getAttribute("data-cart-price");
+
+                // Set modal values dynamically
+                document.getElementById("cartId_" + cartId).value = cartId;
+                document.getElementById("cartName_" + cartId).textContent = cartName;
+
+                // Show the modal
+                const modal = document.getElementById("cartModal_" + cartId);
+                if (modal) {
+                    modal.style.display = "block";
+                }
+            });
+        });
+
+        // Close modal
+        const closeModalButtons = document.querySelectorAll(".close");
+        closeModalButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                const modalId = this.getAttribute("data-modal-id");
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.style.display = "none";
+                }
+            });
+        });
+
+        // Close modal when clicked outside of the modal content
+        window.addEventListener("click", function (event) {
+            const modals = document.querySelectorAll(".modal");
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = "none";
+                }
+            });
+        });
+
+        // Quantity Controls: Increase and Decrease quantity
+        const increaseButtons = document.querySelectorAll(".increase-quantity");
+        const decreaseButtons = document.querySelectorAll(".decrease-quantity");
+
+        increaseButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                const quantityInput = this.parentElement.querySelector('input[name="quantity"]');
+                let currentValue = parseInt(quantityInput.value);
+                quantityInput.value = currentValue + 1;
+            });
+        });
+
+        decreaseButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                const quantityInput = this.parentElement.querySelector('input[name="quantity"]');
+                let currentValue = parseInt(quantityInput.value);
+                if (currentValue > 1) {
+                    quantityInput.value = currentValue - 1;
+                }
+            });
+        });
+    });
+
+</script>
+
+<style>
+    /* Modal overlay */
+    .modal {
+        display: none;
+        /* Hidden by default */
+        position: fixed;
+        /* Stay in place */
+        z-index: 999999999;
+        /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%;
+        /* Full width */
+        height: 100%;
+        /* Full height */
+        background-color: rgba(0, 0, 0, 0.4);
+        /* Black with transparency */
+    }
+
+    /* Modal content */
+    .modal-content {
+        background-color: #fefefe;
+        padding: 20px;
+        max-width: 500px;
+        margin: 5% auto;
+        border: 1px solid #888;
+        box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+        border-radius: 8px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    /* Close button */
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    /* Close button hover effect */
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    /* Form styling */
+    .form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .quantity_controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .quantity_controls input {
+        width: 100%;
+        text-align: center;
+    }
+
+    @media(max-width:520px) {
+        .modal-content {
+            margin: 2%;
+        }
+    }
+</style>
+
+{% endblock %}

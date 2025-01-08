@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% include 'components/favicon.html' %}
+    {% include 'components/css.html' %}
+    <title>Evana - {% block title %}{% endblock %}</title>
+</head>
+
+<body>
+    {% include 'components/message.html' %}
+    {% include 'components/header.html' %}
+
+    <!--=============== MAIN ===============-->
+
+    <main class="main">
+        {% block body %}{% endblock %}
+
+        {% include 'components/newsletter.html' %}
+        {% include 'components/chat.html' %}
+    </main>
+
+    {% include 'components/footer.html' %}
+    {% include 'components/scroll-to-top.html' %}
+
+
+    {% include 'components/js.html' %}
+
+</body>
+
+</html>

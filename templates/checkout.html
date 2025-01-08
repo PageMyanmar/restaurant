@@ -1,0 +1,73 @@
+{% extends 'components/base.html' %}
+
+{% block title %}Checkout{% endblock %}
+
+{% block body %}
+
+<!--=============== BREADCRUMB ===============-->
+<section class="breadcrumb">
+  <ul class="breadcrumb__list flex container">
+    <li><a href="/" class="breadcrumb__link">Home</a></li>
+    <li><span class="breadcrumb__link">></span></li>
+    <li><span class="breadcrumb__link">Shop </span></li>
+    <li><span class="breadcrumb__link">></span></li>
+    <li><span class="breadcrumb__link">Checkout</span></li>
+  </ul>
+</section>
+
+<!--=============== CHECKOUT ===============-->
+<section class="checkout section--lg container ">
+  <div class="go__back">
+    <a href="/carts/{{table.id}}/" class="lnr lnr-arrow-left"></a>
+  </div>
+  <div class="checkout__container grid">
+
+    <form method="POST" action="/checkout/{{table.id}}/" class="checkout__group">
+      {% csrf_token %}
+      <h3 class="section__title">Cart Total</h3>
+      <table class="order__table">
+        <tr>
+          <th colspan="2">Products</th>
+          <th>Total</th>
+        </tr>
+        {% for item in cart_items %}
+        <tr>
+          <td>
+            <img src="{{item.product.image.url}}" alt="{{item.product.name}}" class="order__img">
+          </td>
+          <td>
+            <h3 class="table__title">{{item.product.name}}</h3>
+            <p class="table__quantity">x {{item.quantity}}</p>
+          </td>
+
+          <td>
+            <span class="table__price">{{item.total_price}} MMK</span>
+          </td>
+        </tr>
+        {% endfor %}
+
+        <tr>
+          <td><span class="order__subtitle">Total</span></td>
+          <td colspan="2"><span class="order__grand-total">{{total}} MMK</span></td>
+        </tr>
+
+      </table>
+
+      <div class="payment__methods">
+        <h3 class="checkout__title payment__title">Payment</h3>
+
+        {% for payment in payments %}
+        <div class="payment__option flex">
+          <input type="radio" value="{{payment.id}}" required name="payment" id="radio_{{payment.id}}" class="payment__input">
+          <label for="radio_{{payment.id}}" class="payment__label">{{payment.name}}</label>
+        </div>
+        {% endfor %}
+
+      </div>
+
+      <button type="submit" class="btn btn--md">Place Order</button>
+    </form>
+  </div>
+</section>
+
+{% endblock %}
