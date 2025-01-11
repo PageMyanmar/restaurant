@@ -19,70 +19,69 @@ from django.contrib import admin
 from django.urls import path
 from django.conf.urls.static import static
 from django.conf import settings
-from views import auth_views,cart_views,category_views,page_views,payment_views,product_views,role_views,table_views,user_views
-
+from app.views import *
 urlpatterns = [
     path("abcde/", admin.site.urls),
     # re_path(r'^.*/$', Error404),
 
     # ==================== USER URLS ====================
-    path('',page_views.Index),
-    path('trncs/',auth_views.Login),
-    path('register/',auth_views.Register),
-    path('logout/',auth_views.Logout),
-    path('shop/',page_views.Products),
-    path('contact/',page_views.Contact),
-    path('category/<int:id>/products/<int:t_id>/',page_views.ProductsByCategory),
+    path('',Index),
+    path('trncs/',Login),
+    path('register/',Register),
+    path('logout/',Logout),
+    path('shop/',Products),
+    path('contact/',Contact),
+    path('category/<int:id>/products/<int:t_id>/',ProductsByCategory),
 
     # Cart
-    path('carts/<int:id>/',cart_views.Carts),
-    path('add-to-cart/<int:p_id>/<int:t_id>/', cart_views.AddToCart),
-    path('remove-from-cart/<int:id>/', cart_views.RemoveFromCart),
-    path('update-cart/<int:id>/', cart_views.UpdateCart),
+    path('carts/<int:id>/',Carts),
+    path('add-to-cart/<int:p_id>/<int:t_id>/', AddToCart),
+    path('remove-from-cart/<int:id>/', RemoveFromCart),
+    path('update-cart/<int:id>/', UpdateCart),
 
     # ==================== ADMIN URLS ====================
 
     # Roles
-    path('roles/',role_views.Roles),
-    path('create-role/',role_views.CreateRole),
-    path('update-role/<int:id>/',role_views.UpdateRole),
-    path('delete-role/<int:id>/',role_views.DeleteRole),
+    path('roles/',Roles),
+    path('create-role/',CreateRole),
+    path('update-role/<int:id>/',UpdateRole),
+    path('delete-role/<int:id>/',DeleteRole),
 
     # Invoices
-    path('invoices/',page_views.Invoices),
+    path('invoices/',Invoices),
 
     # Users
-    path('users/',user_views.Users),
-    path('create-user/',user_views.CreateUser),
-    path('update-user/<uuid:id>/',user_views.UpdateUser),
-    path('delete-user/<uuid:id>/',user_views.DeleteUser),
+    path('users/',Users),
+    path('create-user/',CreateUser),
+    path('update-user/<uuid:id>/',UpdateUser),
+    path('delete-user/<uuid:id>/',DeleteUser),
 
     # Categories
-    path('categories/',category_views.Categories),
-    path('create-category/',category_views.CreateCategory),
-    path('update-category/<int:id>/',category_views.UpdateCategory),
-    path('delete-category/<int:id>/',category_views.DeleteCategory),
+    path('categories/',Categories),
+    path('create-category/',CreateCategory),
+    path('update-category/<int:id>/',UpdateCategory),
+    path('delete-category/<int:id>/',DeleteCategory),
 
     # Products
-    path('products/',product_views.Products),
-    path('create-product/',product_views.CreateProduct),
-    path('update-product/<int:id>/',product_views.UpdateProduct),
-    path('delete-product/<int:id>/',product_views.DeleteProduct),
+    path('products/',Products),
+    path('create-product/',CreateProduct),
+    path('update-product/<int:id>/',UpdateProduct),
+    path('delete-product/<int:id>/',DeleteProduct),
 
     # Tables
-    path('tables/',table_views.Tables),
-    path('create-table/',table_views.CreateTable),
-    path('update-table/<int:id>/',table_views.UpdateTable),
-    path('delete-table/<int:id>/',table_views.DeleteTable),
-    path('order/<int:id>/',table_views.Order),
-    path('order-confirm/<int:id>/',cart_views.OrderConfirm),
-    path('checkout/<int:id>/',table_views.Checkout),
+    path('tables/',Tables),
+    path('create-table/',CreateTable),
+    path('update-table/<int:id>/',UpdateTable),
+    path('delete-table/<int:id>/',DeleteTable),
+    path('order/<int:id>/',Order),
+    path('order-confirm/<int:id>/',OrderConfirm),
+    path('checkout/<int:id>/',Checkout),
 
     #Payment
-    path('payments/',payment_views.Payments),
-    path('create-payment/',payment_views.CreatePayment),
-    path('update-payment/<int:id>/',payment_views.UpdatePayment),
-    path('delete-payment/<int:id>/',payment_views.DeletePayment)
+    path('payments/',Payments),
+    path('create-payment/',CreatePayment),
+    path('update-payment/<int:id>/',UpdatePayment),
+    path('delete-payment/<int:id>/',DeletePayment)
 
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
