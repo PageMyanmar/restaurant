@@ -4,6 +4,14 @@ from authentication.models import *
 from django.contrib.auth import login,logout
 from django.contrib.auth.hashers import check_password
 from django.conf import settings
+from django.db import transaction
+from app.models import *
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+from collections import defaultdict
+from django.contrib.auth.decorators import login_required
+from app.decorators import role_permission_required
+from django.contrib.auth.models import Permission
 
 def Register(request):
     if request.method == "GET":
@@ -59,14 +67,6 @@ def Login(request):
 def Logout(request):
     logout(request)
     return redirect('/')
-
-
-from app.models import CartModel, ProductModel,OrderModel
-from app.models import TableModel
-from django.shortcuts import render,redirect
-from django.contrib import messages
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
 
 def send_websocket_notification(message):
     channel_layer = get_channel_layer()
@@ -178,13 +178,6 @@ def OrderConfirm(request, id):
     send_websocket_notification(message)
     return redirect(f"/carts/{table.id}/")
 
-from app.models import CategoryModel
-from django.shortcuts import render,redirect
-from django.contrib import messages
-from django.conf import settings
-from app.decorators import role_permission_required
-from django.contrib.auth.decorators import login_required
-
 @login_required(login_url=settings.LOGIN_URL)
 @role_permission_required('app.view_categorymodel')
 def Categories(request):
@@ -235,11 +228,6 @@ def DeleteCategory(request,id):
     category.delete()
     messages.success(request,"Category is deleted successfully!")
     return redirect('/categories/')
-
-from django.shortcuts import render,redirect
-from app.models import *
-from collections import defaultdict
-from django.contrib import messages
 
 def Index(request):
     categories = CategoryModel.objects.all().order_by('-created_at')
@@ -309,13 +297,6 @@ def Invoices(request):
     }
     return render(request, 'invoices.html', context)
 
-from django.shortcuts import redirect,render
-from app.models import *
-from django.contrib import messages
-from django.conf import settings
-from django.contrib.auth.decorators import login_required
-from app.decorators import role_permission_required
-
 # View to render the main page with a payment list
 @login_required(login_url=settings.LOGIN_URL)
 @role_permission_required('app.view_paymentmodel')
@@ -364,13 +345,6 @@ def DeletePayment(request,id):
     messages.success(request,"payment is deleted successfully!")
     return redirect('/payments/')
     
-from django.shortcuts import render,redirect
-from django.contrib import messages
-from app.models import ProductModel, CategoryModel
-from django.conf import settings
-from django.contrib.auth.decorators import login_required
-from app.decorators import role_permission_required
-
 # View to display all products
 @login_required(login_url=settings.LOGIN_URL)
 @role_permission_required('app.view_productmodel')
@@ -436,14 +410,6 @@ def DeleteProduct(request,id):
     product.delete()
     messages.success(request,"Product is deleted successfully!")
     return redirect('/products/')
-
-from django.shortcuts import render,redirect
-from authentication.models import *
-from django.contrib.auth.models import Permission
-from django.contrib import messages
-from django.conf import settings
-from django.contrib.auth.decorators import login_required
-from app.decorators import role_permission_required
 
 @login_required(login_url=settings.LOGIN_URL)
 @role_permission_required('app.view_rolemodel')
@@ -518,16 +484,6 @@ def DeleteRole(request, id):
     role.delete()
     messages.success(request, "Role deleted successfully.")
     return redirect('/roles/')
-
-from django.shortcuts import redirect,render
-from app.models import *
-from django.contrib import messages
-from django.db import transaction
-from collections import defaultdict
-from django.conf import settings
-from django.contrib.auth.decorators import login_required
-from app.decorators import role_permission_required
-
 
 @login_required(login_url=settings.LOGIN_URL)
 @role_permission_required('app.view_tablemodel')
@@ -620,7 +576,7 @@ def Checkout(request, id):
         table.status = False
         table.save()
 
-        return redirect('/tables/')
+        return redirect('/checkout-success/')
     else:
         # Prepare the context for GET request
         payments = PaymentModel.objects.all().order_by('-created_at')
@@ -632,12 +588,8 @@ def Checkout(request, id):
         }
         return render(request, "checkout.html", context)
     
-from django.shortcuts import render,redirect
-from django.conf import settings
-from django.contrib.auth.decorators import login_required
-from app.decorators import role_permission_required
-from app.models import *
-from django.contrib import messages
+def CheckoutSuccess(request):
+    return render(request, "checkout-success.html")
 
 @login_required(login_url=settings.LOGIN_URL)
 @role_permission_required('authentication.add_usermodel')

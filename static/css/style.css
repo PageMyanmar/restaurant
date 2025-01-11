@@ -283,27 +283,28 @@ table {
   text-align: center;
 }
 
-.go__back{
-  width:3rem;
-  height:3rem;
+.go__back {
+  width: 3rem;
+  height: 3rem;
   line-height: 3rem;
   font-weight: var(--weight-700);
   text-align: center;
   margin-bottom: 2rem;
   border-radius: 50%;
   font-size: var(--large-font-size);
-  background:var(--first-color);
+  background: var(--first-color);
 }
 
-.go__back a{
-  color:var(--body-color);
+.go__back a {
+  color: var(--body-color);
 }
 
-.search__form{
+.search__form {
   margin-bottom: 2rem;
   position: relative;
   max-width: 500px;
 }
+
 /*=============== CHAT ===============*/
 
 .chat {
@@ -463,7 +464,7 @@ table {
   border-bottom: 1px solid var(--first-color);
 }
 
-.header__search{
+.header__search {
   width: 340px;
   position: relative;
 }
@@ -1273,7 +1274,7 @@ table {
 
 /*=============== FOOTER ===============*/
 .footer__container {
-  grid-template-columns:100%;
+  grid-template-columns: 100%;
   padding-block: 2.5rem;
 }
 
@@ -1943,7 +1944,7 @@ table {
   grid-template-columns: 100%;
 }
 
-.checkout__group{
+.checkout__group {
   border: 1px solid var(--border-color-alt);
   padding: 2rem;
   border-radius: 0.5rem;
@@ -2439,8 +2440,7 @@ table {
   .form__group,
   .continue__container,
   .table__card--group,
-  .categories__card--container,
-  .products__card--container {
+  .categories__card--container {
     grid-template-columns: 1fr;
   }
 
@@ -2469,6 +2469,30 @@ table {
     flex-direction: column;
     align-items: center;
   }
+
+  .product__card--banner {
+    padding:0.5rem;
+  }
+
+  .product__card--image {
+    height: 10rem;
+    padding: 0.5rem;
+  }
+
+  .product__card--content {
+    padding:0.5rem;
+  }
+
+  .product__card--title {
+    font-size: var(--small-font-size);
+    margin-block: 0.75rem 0.5rem;
+  }
+
+  .product__card--price.new__price {
+    font-size: var(--small-font-size);
+    padding-top: 0;
+  }
+
 }
 
 @media screen and (max-width: 350px) {

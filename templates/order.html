@@ -5,56 +5,89 @@
 {% block body %}
 {% load static %}
 
-<!--=============== CATEGORIES ===============-->
-<section class="categories container section">
-    <h3 class="section__title"><span>Popular</span> Categories</h3>
+<style>
+    @media(max-width:576px){
+        .cart__btn{
+            bottom:0;
+            right:0;
+        }
+        .products__card--container{
+            gap:0.5rem;
+        }
+    }
+</style>
 
-    <div class="categories__container swiper">
-        <div class="swiper-wrapper">
-            {% for category in categories %}
-            <a href="/category/{{category.id}}/products/{{table.id}}/" class="category__item swiper-slide">
-                <div class="category__image--box">
-                    <img src="{{category.image.url}}" alt="{{category.name}}" class="category__img">
-                </div>
-                <h3 class="category__title">{{category.name}}</h3>
-            </a>
-            {% endfor %}
-        </div>
-
-        <div class="swiper-button-next">
-            <i class="fi fi-rs-angle-right"></i>
-        </div>
-        <div class="swiper-button-prev">
-            <i class="fi fi-rs-angle-left"></i>
-        </div>
-    </div>
-</section>
 
 <section class="products__cards section--lg container">
     <h3 class="section__title"><span>Our</span> Menus</h3>
-    <div class="products__card--container grid">
-        {% for product in products %}
-        <div class="product__card--item" id="product__card--item-{{ product.id }}">
-            <div class="product__card--banner">
-                <div class="product__card--image">
-                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product__card--img">
+
+    <div class="tab__btns">
+        <span class="tab__btn active-tab" data-target="#all">All</span>
+        {% for category in categories %}
+        <span class="tab__btn" data-target="#category_{{category.id}}">{{category.name}}</span>
+        {% endfor %}
+    </div>
+
+
+    <div class="tab__items">
+
+        <div class="tab__item active-tab" content id="all">
+            <div class="products__card--container grid">
+                {% for product in products %}
+                <div class="product__card--item" id="product__card--item-{{ product.id }}">
+                    <div class="product__card--banner">
+                        <div class="product__card--image">
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product__card--img">
+                        </div>
+                        <div class="product__card--content">
+                            <h3 class="product__card--title">{{ product.name }}</h3>
+                            <span class="product__card--price new__price">{{ product.price }} MMK</span>
+                            {% if product.quantity != 0 %}
+                            <button type="button" class="action__btn cart__btn" aria-label="Add to Cart"
+                                data-table-id="{{table.id}}" data-product-id="{{ product.id }}"
+                                data-product-name="{{ product.name }}" data-product-price="{{ product.price }}">
+                                <i class="fi fi-rs-shopping-bag-add"></i>
+                            </button>
+                            {% endif %}
+                        </div>
+                        {% if product.quantity == 0 %}
+                        <div class="product__badge light-pink">Out of stock</div>
+                        {% endif %}
+                    </div>
                 </div>
-                <div class="product__card--content">
-                    <span class="product__card--category">{{ product.category.name }}</span>
-                    <h3 class="product__card--title">{{ product.name }}</h3>
-                    <span class="product__card--quantity">Stock: ({{ product.quantity }})</span>
-                    <span class="product__card--price new__price">Price: {{ product.price }} MMK</span>
-                    {% if product.quantity != 0 %}
-                    <button type="button" class="action__btn cart__btn" aria-label="Add to Cart"
-                        data-table-id="{{table.id}}" data-product-id="{{ product.id }}"
-                        data-product-name="{{ product.name }}" data-product-price="{{ product.price }}">
-                        <i class="fi fi-rs-shopping-bag-add"></i>
-                    </button>
-                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% for category in categories %}
+        <div class="tab__item" content id="category_{{category.id}}">
+            <div class="products__card--container grid">
+
+                {% for product in products %}
+                {% if product.category.id == category.id %}
+                <div class="product__card--item" id="product__card--item-{{ product.id }}">
+                    <div class="product__card--banner">
+                        <div class="product__card--image">
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product__card--img">
+                        </div>
+                        <div class="product__card--content">
+                            <h3 class="product__card--title">{{ product.name }}</h3>
+                            <span class="product__card--price new__price">{{ product.price }} MMK</span>
+                            {% if product.quantity != 0 %}
+                            <button type="button" class="action__btn cart__btn" aria-label="Add to Cart"
+                                data-table-id="{{table.id}}" data-product-id="{{ product.id }}"
+                                data-product-name="{{ product.name }}" data-product-price="{{ product.price }}">
+                                <i class="fi fi-rs-shopping-bag-add"></i>
+                            </button>
+                            {% endif %}
+                        </div>
+                        {% if product.quantity == 0 %}
+                        <div class="product__badge light-pink">Out of stock</div>
+                        {% endif %}
+                    </div>
                 </div>
-                {% if product.quantity == 0 %}
-                <div class="product__badge light-pink">Out of stock</div>
                 {% endif %}
+                {% endfor %}
+
             </div>
         </div>
         {% endfor %}
@@ -66,14 +99,15 @@
 <div id="cartModal_{{product.id}}" class="modal">
     <div class="modal-content">
         <span class="close" data-modal-id="cartModal_{{product.id}}">&times;</span>
-        <form action="/add-to-cart/{{product.id}}/{{table.id}}/" method="POST" class="form" id="addToCartForm_{{product.id}}">
+        <form action="/add-to-cart/{{product.id}}/{{table.id}}/" method="POST" class="form"
+            id="addToCartForm_{{product.id}}">
             {% csrf_token %}
             <input type="hidden" name="product_id" id="productId_{{product.id}}">
             <input type="hidden" name="table_id" id="tableId_{{table.id}}">
             <h3 id="productName_{{product.id}}" class="section__title">{{product.name}}</h3>
             <div class="product__card--image">
                 <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product__card--img">
-            </div>
+            </div>s
             <!-- Inside your modal -->
             <div class="form-group">
                 <div class="quantity_controls">
@@ -85,7 +119,8 @@
             </div>
             <div class="form-group">
                 <label for="note_{{product.id}}">Note</label>
-                <textarea id="note_{{product.id}}" placeholder="Add your note (optional)" class="form__input textarea" name="note"></textarea>
+                <textarea id="note_{{product.id}}" placeholder="Add your note (optional)" class="form__input textarea"
+                    name="note"></textarea>
             </div>
             <button type="submit" class="btn btn-sm">Add to Cart</button>
         </form>
@@ -236,9 +271,10 @@
         width: 100%;
         text-align: center;
     }
-    @media(max-width:520px){
-        .modal-content{
-            margin:2%;
+
+    @media(max-width:520px) {
+        .modal-content {
+            margin: 2%;
         }
     }
 </style>

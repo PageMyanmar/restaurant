@@ -1,0 +1,39 @@
+{% extends 'components/base.html' %}
+
+{% block title %}Checkout Success{% endblock %}
+
+{% block body %}
+
+<style>
+    .checkout__success--container {
+        max-width: 500px;
+        border:2px solid var(--border-color);
+        margin: 0 auto;
+        padding:1rem;
+        border-radius: 1rem;
+    }
+
+    .checkout__success--bannar{
+        background-color: var(--second-color);
+        border-radius: 0.5rem;
+        text-align: center;
+        padding:3rem
+    }
+
+    .checkout__success--message{
+        margin-top: 2rem;
+    }
+</style>
+
+<section class="section--lg container" style="margin-bottom: 100%;">
+
+    <div class="checkout__success--container">
+        <div class="checkout__success--bannar">
+            <h1 class="checkout__success--title">Checkout Successfully!</h1>
+            <p class="checkout__success--message">Thank for shopping with us. Have a great day!</p>
+        </div>
+    </div>
+
+</section>
+
+{% endblock %}

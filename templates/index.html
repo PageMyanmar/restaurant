@@ -93,10 +93,11 @@
                 <div class="product__item">
                     <div class="product__banner">
                         <a href="/products/details/{{product.id}}/" class="product__images">
-                            <img src="{{product.featured_image.url}}" alt="{{product.name}}" class="product__img default">
+                            <img src="{{product.featured_image.url}}" alt="{{product.name}}"
+                                class="product__img default">
                             <img src="{{product.hovered_image.url}}" alt="{{product.name}}" class="product__img hover">
                         </a>
-        
+
                         <div class="product__actions">
                             <button type="button" class="action__btn" aria-label="Quick View"
                                 onclick="quickView(event, {{ product.id }})">
@@ -111,23 +112,12 @@
                                 <i class="fi fi-rs-shuffle"></i>
                             </button>
                         </div>
-                        {% if product.stock == 0 %}
                         <div class="product__badge light-pink">Out of stock</div>
                         {% else %}
-                        {% if product.discount >= 1 and product.discount <= 10 %} 
-                        <div class="product__badge light-green">{{product.discount}}% Off</div>
-                        {% elif product.discount >= 11 and product.discount <= 25 %} 
-                        <div class="product__badge green">{{product.discount}}% Off</div>
-                        {% elif product.discount >= 26 and product.discount <= 50 %} 
-                        <div class="product__badge light-orange">{{product.discount}}% Off</div>
-                        {% elif product.discount >= 51 and product.discount <= 75 %} 
-                        <div class="product__badge light-red">{{product.discount}}% Off</div>
-                        {% elif product.discount >= 76 and product.discount <= 100 %} 
-                        <div class="product__badge deep-red">{{product.discount}}% Off</div>
-                        {% endif %}
+
                         {% endif %}
                     </div>
-        
+
                     <div class="product__content">
                         <span class="product__category">{{product.category.name}}</span>
                         <a href="/products/details/{{product.id}}/">
@@ -148,7 +138,7 @@
                             <span class="new__price">{{product.regular_price}} MMK</span>
                             {% endif %}
                         </div>
-        
+
                         {% if product.stock != 0 %}
                         <button type="button" class="action__btn cart__btn" aria-label="Add To Cart"
                             onclick="addToCart(event, {{ product.id }})">

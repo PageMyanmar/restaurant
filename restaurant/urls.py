@@ -81,7 +81,9 @@ urlpatterns = [
     path('payments/',Payments),
     path('create-payment/',CreatePayment),
     path('update-payment/<int:id>/',UpdatePayment),
-    path('delete-payment/<int:id>/',DeletePayment)
+    path('delete-payment/<int:id>/',DeletePayment),
+
+    path('checkout-success/',CheckoutSuccess),
 
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
