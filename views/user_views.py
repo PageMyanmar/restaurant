@@ -5,8 +5,8 @@ from app.decorators import role_permission_required
 from app.models import *
 from django.contrib import messages
 
-# @login_required(login_url=settings.LOGIN_URL)
-# @role_permission_required('account.add_usermodel')
+@login_required(login_url=settings.LOGIN_URL)
+@role_permission_required('authentication.add_usermodel')
 def CreateUser(request):
     if request.method == "GET":
         roles = RoleModel.objects.all().order_by('-created_at')
@@ -45,8 +45,8 @@ def CreateUser(request):
             messages.error(request, "Password does not match! Please check your password again!")
             return redirect('/users/')
 
-# @login_required(login_url=settings.LOGIN_URL)
-# @role_permission_required('account.view_usermodel')
+@login_required(login_url=settings.LOGIN_URL)
+@role_permission_required('authentication.view_usermodel')
 def Users(request):
     users = UserModel.objects.all().order_by('-created_at')
     roles = RoleModel.objects.all().order_by('-created_at')
@@ -56,8 +56,8 @@ def Users(request):
     }
     return render(request, 'users.html',context)
 
-# @login_required(login_url=settings.LOGIN_URL)
-# @role_permission_required('account.change_usermodel')
+@login_required(login_url=settings.LOGIN_URL)
+@role_permission_required('authentication.change_usermodel')
 def UpdateUser(request, id):
     user = UserModel.objects.get(id=id)
     if request.method == "GET":
@@ -80,8 +80,8 @@ def UpdateUser(request, id):
         messages.success(request, "User was updated!")
         return redirect('/users/')
 
-# @login_required(login_url=settings.LOGIN_URL)
-# @role_permission_required('account.delete_usermodel')
+@login_required(login_url=settings.LOGIN_URL)
+@role_permission_required('authentication.delete_usermodel')
 def DeleteUser(request, id):
     user = UserModel.objects.get(id=id)
     user.delete()

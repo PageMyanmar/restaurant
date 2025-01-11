@@ -2,7 +2,12 @@ from django.shortcuts import render,redirect
 from authentication.models import *
 from django.contrib.auth.models import Permission
 from django.contrib import messages
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from app.decorators import role_permission_required
 
+@login_required(login_url=settings.LOGIN_URL)
+@role_permission_required('app.view_rolemodel')
 def Roles(request):
     roles = RoleModel.objects.all().order_by('-created_at')
     context = {
@@ -10,6 +15,8 @@ def Roles(request):
     }
     return render(request,'roles.html',context)
 
+@login_required(login_url=settings.LOGIN_URL)
+@role_permission_required('app.add_rolemodel')
 def CreateRole(request):
     if request.method == "GET":
         permissions = Permission.objects.all()
@@ -36,6 +43,8 @@ def CreateRole(request):
         messages.success(request, "Role created successfully.")
         return redirect('/roles/')  
 
+@login_required(login_url=settings.LOGIN_URL)
+@role_permission_required('app.change_rolemodel')
 def UpdateRole(request, id):
     role = RoleModel.objects.get(id = id)
     if request.method == "GET":
@@ -63,6 +72,8 @@ def UpdateRole(request, id):
         messages.success(request, 'Role updated successfully.')
         return redirect('/roles/')
 
+@login_required(login_url=settings.LOGIN_URL)
+@role_permission_required('app.delete_rolemodel')
 def DeleteRole(request, id):
     role = RoleModel.objects.get(id = id)
     role.delete()

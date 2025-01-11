@@ -1,11 +1,15 @@
 from django.shortcuts import redirect,render
 from app.models import *
-from app.models import *
 from django.contrib import messages
 from django.db import transaction
 from collections import defaultdict
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from app.decorators import role_permission_required
 
-# View to render the main page with a table list
+
+@login_required(login_url=settings.LOGIN_URL)
+@role_permission_required('app.view_tablemodel')
 def Tables(request):
     tables = TableModel.objects.all()
     context = {
@@ -13,6 +17,8 @@ def Tables(request):
     }
     return render(request, 'tables.html', context)
     
+@login_required(login_url=settings.LOGIN_URL)
+@role_permission_required('app.add_tablemodel')
 def CreateTable(request):
     if request.method == "GET":
         return render(request,"create-table.html")
@@ -24,6 +30,8 @@ def CreateTable(request):
         messages.success(request,"Table is created successfully!")
         return redirect('/tables/')
 
+@login_required(login_url=settings.LOGIN_URL)
+@role_permission_required('app.change_tablemodel')
 def UpdateTable(request,id):
     table = TableModel.objects.get(id = id)
     if request.method == "GET":
@@ -37,6 +45,8 @@ def UpdateTable(request,id):
         messages.success(request,"Table is updated successfully!")
         return redirect('/tables/')
 
+@login_required(login_url=settings.LOGIN_URL)
+@role_permission_required('app.delete_tablemodel')
 def DeleteTable(request,id):
     table = TableModel.objects.get(id = id)
     table.delete()

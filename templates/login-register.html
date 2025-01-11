@@ -1,6 +1,6 @@
 {% extends 'components/base.html' %}
 
-{% block title %}Login / Register{% endblock %}
+{% block title %}Login{% endblock %}
 
 {% block body %}
 
@@ -10,7 +10,7 @@
     <ul class="breadcrumb__list flex container">
         <li><a href="/" class="breadcrumb__link">Home</a></li>
         <li><span class="breadcrumb__link">></span></li>
-        <li><span class="breadcrumb__link">Login / Register</span></li>
+        <li><span class="breadcrumb__link">Login</span></li>
     </ul>
 </section>
 
@@ -20,20 +20,17 @@
         <div class="login">
             <h3 class="section__title">Login</h3>
 
-            <form action="/trncs/" method="POST" class="form grid" onsubmit="return validateLoginForm()">
+            <form action="/trncs/" method="POST" class="form grid">
                 {% csrf_token %}
                 <input type="email" name="email" class="form__input" placeholder="Your Email">
-                <div class="password__form">
-                    <input type="password" name="password" id="password" class="form__input" placeholder="Your Password">
-                    <span class="toggle-password" onclick="togglePasswordVisibility('password', this)">👁️</span>
-                </div>
+                <input type="password" name="password" id="password" class="form__input" placeholder="Your Password">
                 <div class="form__btn">
                     <button class="btn" type="submit">Login</button>
                 </div>
             </form>
         </div>
 
-        <div class="register">
+        <!-- <div class="register">
             <h3 class="section__title">Create an Account</h3>
 
             <div class="continue__container grid">
@@ -84,7 +81,7 @@
                     <button class="btn" type="submit">Submit & Register</button>
                 </div>
             </form>
-        </div>
+        </div> -->
     </div>
 </section>
 

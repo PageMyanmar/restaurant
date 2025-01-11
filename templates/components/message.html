@@ -3,50 +3,110 @@
 <!-- SweetAlert2 JavaScript -->
 <script src="{% static 'js/sweetalert2.all.min.js' %}"></script>
 
-<!-- Django Messages to SweetAlert2 -->
-<script>
-    {% if messages %}
+{% if request.user.is_authenticated %}
+
+<!-- Django Messages Template -->
+{% if messages %}
+<div id="message-container">
     {% for message in messages %}
-    // Determine the icon, background, and color based on the message level tag
-    let icon, background, textColor;
-    let messageTag = '{{ message.tags|escapejs }}'.toLowerCase(); // Get the actual tag name from settings.py
+    <div class="alert {{ message.tags }} alert-dismissible fade show message-box d-flex align-items-center" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close mb-2" data-bs-dismiss="alert" aria-label="btn-close">
+            <span><i class="fa-solid fa-xmark"></i></span>
+        </button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
 
-    // Debugging output
-    console.log("Message Tag:", messageTag);
+<!-- WebSocket Real-Time Messages -->
+<script>
+    // Initialize WebSocket connection
+    const socket = new WebSocket(`ws://${window.location.host}/ws/messages/`);
 
-    if (messageTag === 'alert-success') {
-        icon = 'success';
-        background = '#155724';
-        textColor = '#d4edda';
-    } else if (messageTag === 'alert-danger') {
-        icon = 'error';
-        background = '#721c24';
-        textColor = '#f8d7da';
-    } else if (messageTag === 'alert-warning') {
-        icon = 'warning';
-        background = '#856404';
-        textColor = '#fff3cd';
-    } else if (messageTag === 'alert-info') {
-        icon = 'info';
-        background = '#0c5460';
-        textColor = '#d1ecf1';
-    } else {
-        icon = 'info';
-        background = '#0c5460';
-        textColor = '#d1ecf1';
+    // Log connection events
+    socket.onopen = function () {
+        console.log('WebSocket connection opened');
+    };
+
+    socket.onerror = function (error) {
+        console.error('WebSocket encountered an error:', error);
+    };
+
+    socket.onclose = function (event) {
+        console.log('WebSocket closed:', event.code, event.reason);
+    };
+
+    // Handle incoming messages
+    socket.onmessage = function (event) {
+        const data = JSON.parse(event.data);
+        const message = data.message;
+        const alertType = data.type || "alert-info"; // Default to info if no type is provided
+
+        // Determine the icon, background, and color based on the message type
+        let icon, background, textColor;
+
+        if (alertType === 'alert-success') {
+            icon = 'success';
+            background = '#155724';
+            textColor = '#d4edda';
+        } else if (alertType === 'alert-danger') {
+            icon = 'error';
+            background = '#721c24';
+            textColor = '#f8d7da';
+        } else if (alertType === 'alert-warning') {
+            icon = 'warning';
+            background = '#856404';
+            textColor = '#fff3cd';
+        } else if (alertType === 'alert-info') {
+            icon = 'info';
+            background = '#0c5460';
+            textColor = '#d1ecf1';
+        } else {
+            icon = 'info';
+            background = '#0c5460';
+            textColor = '#d1ecf1';
+        }
+
+        // Display the message using SweetAlert2
+        Swal.fire({
+            toast: true,
+            position: 'top-end', // Adjust position as needed
+            icon: icon,
+            title: message,
+            showConfirmButton: true,
+            // timer: 3000,
+            // timerProgressBar: true,
+            background: background, // Use the determined background color
+            color: textColor // Use the determined text color
+        });
+    };
+</script>
+
+<style>
+    /* Styling for message box */
+    #message-container {
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column-reverse; /* Ensures the newest messages appear on top */
+        gap: 10px;
     }
 
-    Swal.fire({
-        toast: true,
-        position: 'top-end', // Adjust position as needed
-        icon: icon,
-        title: '{{ message|escapejs }}',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        background: background, // Use the determined background color
-        color: textColor // Use the determined text color
-    });
-    {% endfor %}
-    {% endif %}
-</script>
+    .message-box {
+        min-width: 400px;
+    }
+
+    .message-box .btn-close i {
+        padding-bottom: 15px;
+    }
+
+    @media (max-width: 600px) {
+        .message-box {
+            min-width: 200px;
+        }
+    }
+</style>
+{% endif %}

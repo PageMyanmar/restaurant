@@ -2,7 +2,18 @@ from app.models import CartModel, ProductModel,OrderModel
 from app.models import TableModel
 from django.shortcuts import render,redirect
 from django.contrib import messages
-from django.http import JsonResponse
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+
+def send_websocket_notification(message):
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        'notifications',
+        {
+            'type': 'send_notification',
+            'message': message,
+        }
+    )
 
 def Carts(request, id):
     table = TableModel.objects.filter(id=id).first()
@@ -97,5 +108,9 @@ def OrderConfirm(request, id):
     cart_items.update(status=True)
 
     # Send success message
-    messages.success(request, f"စားပွဲနံပါတ် {table.id} မှ order မှာယူထားပါသည်။")
+    # Trigger a success message with cart item quantity
+    message = f"စားပွဲနံပါတ် {table.id} မှ order မှာယူထားပါသည်။"
+    messages.success(request, message)   
+    # Send WebSocket notification
+    send_websocket_notification(message)
     return redirect(f"/carts/{table.id}/")

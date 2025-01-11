@@ -19,59 +19,78 @@
         </div>
 
         <ul class="nav__list">
-
+            {% if request.user.is_superuser %}
             <li class="nav__item">
                 <a href="/" class="nav__link {% if request.path == '/'%} active-link {% endif %}">Dashboard</a>
             </li>
+            {% endif %}
 
+            {% if request.user|has_role_permission:'view_tablemodel' %}
             <li class="nav__item">
                 <a href="/tables/"
                     class="nav__link {% if request.path == '/tables/'%} active-link {% endif %}">Tables</a>
             </li>
+            {% endif %}
 
+            {% if request.user|has_role_permission:'view_categorymodel' %}
             <li class="nav__item">
                 <a href="/categories/"
                     class="nav__link {% if request.path == '/categories/'%} active-link {% endif %}">Categories</a>
             </li>
-
+            {% endif %}
             
+            {% if request.user|has_role_permission:'view_paymentmodel' %}
             <li class="nav__item">
                 <a href="/payments/"
                     class="nav__link {% if request.path == '/payments/'%} active-link {% endif %}">Payments</a>
             </li>
+            {% endif %}
 
+            {% if request.user|has_role_permission:'view_productmodel' %}
             <li class="nav__item">
                 <a href="/products/"
                     class="nav__link {% if request.path == '/products/'%} active-link {% endif %}">Products</a>
             </li>
+            {% endif %}
 
+            {% if request.user|has_role_permission:'view_invoicemodel' %}
             <li class="nav__item">
                 <a href="/invoices/"
                     class="nav__link {% if request.path == '/invoices/'%} active-link {% endif %}">Invoices</a>
             </li>
-
+            {% endif %}
             
+            {% if request.user|has_role_permission:'view_rolemodel' %}
             <li class="nav__item">
                 <a href="/roles/" class="nav__link {% if request.path == '/roles/'%} active-link {% endif %}">Roles</a>
             </li>
+            {% endif %}
 
+            {% if request.user|has_role_permission:'view_usermodel' %}
             <li class="nav__item">
                 <a href="/users/" class="nav__link {% if request.path == '/users/'%} active-link {% endif %}">Users</a>
             </li>
+            {% endif %}
 
             <!-- <li class="nav__item">
                 <a href="/contact/"
                     class="nav__link {% if request.path == '/contact/'%} active-link {% endif %}">Contact Us</a>
             </li> -->
 
-            <li class="nav__item">
+            <!-- <li class="nav__item">
                 {% if request.user.is_authenticated %}
                 <a href="/my-account/"
                     class="nav__link {% if request.path == '/my-account/'%} active-link {% endif %}">My Account</a>
                 {% else %}
                 <a href="/login/" class="nav__link {% if request.path == '/login/'%} active-link {% endif %}">Login</a>
                 {% endif %}
+            </li> -->
+            {% if request.user.is_authenticated %}
+            <li class="nav__item">
+                <a href="/logout/"
+                    class="nav__link">Logout</a>
             </li>
+            {% endif %}
 
         </ul>
 

@@ -1273,7 +1273,7 @@ table {
 
 /*=============== FOOTER ===============*/
 .footer__container {
-  grid-template-columns: 4.5fr repeat(2, 2fr) 3.5fr;
+  grid-template-columns:100%;
   padding-block: 2.5rem;
 }
 
@@ -2053,7 +2053,7 @@ table {
 
 /*=============== LOGIN & REGISTER ===============*/
 .login-register__container {
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 100%;
   align-items: flex-start;
 }
 
@@ -2325,7 +2325,6 @@ table {
 
   .products__container,
   .showcase__container,
-  .footer__container,
   .details__container,
   .products__card--container {
     grid-template-columns: repeat(2, 1fr);
@@ -2384,8 +2383,6 @@ table {
 
   .products__container,
   .showcase__container,
-  .footer__container,
-  .login-register__container,
   .details__container,
   .card_group {
     grid-template-columns: 100%;

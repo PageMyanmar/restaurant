@@ -30,10 +30,6 @@ urlpatterns = [
     path('trncs/',auth_views.Login),
     path('register/',auth_views.Register),
     path('logout/',auth_views.Logout),
-    path('subscribe/',auth_views.Subscribe),
-    path('get-counts/', page_views.GetCounts),
-    path('my-account/',page_views.MyAccount),
-    path('submit-review/',page_views.SubmitReview),
     path('shop/',page_views.Products),
     path('contact/',page_views.Contact),
     path('category/<int:id>/products/<int:t_id>/',page_views.ProductsByCategory),
@@ -43,9 +39,6 @@ urlpatterns = [
     path('add-to-cart/<int:p_id>/<int:t_id>/', cart_views.AddToCart),
     path('remove-from-cart/<int:id>/', cart_views.RemoveFromCart),
     path('update-cart/<int:id>/', cart_views.UpdateCart),
-
-    # Products
-    path('products/details/<int:id>/',page_views.ProductDetails),
 
     # ==================== ADMIN URLS ====================
 
