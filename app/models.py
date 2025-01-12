@@ -14,16 +14,33 @@ class TableModel(models.Model):
 
 class CategoryModel(models.Model):
     name = models.CharField(max_length=200)
-    image = models.ImageField(upload_to='category/')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
 
+class SizeModel(models.Model):
+    name = models.CharField(max_length=200)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+class MeatModel(models.Model):
+    name = models.CharField(max_length=200)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+class SpicyModel(models.Model):
+    name = models.CharField(max_length=200)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
 class ProductModel(models.Model):
     name = models.CharField(max_length=200)
     image = models.ImageField(upload_to='product/')
+    size = models.ManyToManyField(SizeModel)
+    meat = models.ManyToManyField(MeatModel)
+    spicy = models.ManyToManyField(SpicyModel)
     price = models.IntegerField(default=0,null=True,blank=True)
     quantity = models.IntegerField(default=0, verbose_name="Current Stock")
     category = models.ForeignKey(CategoryModel,on_delete=models.SET_NULL,null=True,default=None)
@@ -41,14 +58,18 @@ class PaymentModel(models.Model):
 
 
 class CartModel(models.Model):
-    table = models.ForeignKey(TableModel,on_delete=models.SET_NULL,null=True)
+    table = models.ForeignKey(TableModel, on_delete=models.SET_NULL, null=True)
     product = models.ForeignKey(ProductModel, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1, null=True)
     total_price = models.BigIntegerField(default=0, null=True)
-    note = models.TextField(null=True,blank=True,default=None)
+    note = models.TextField(null=True, blank=True, default=None)
+    size = models.ForeignKey(SizeModel, on_delete=models.SET_NULL, null=True, blank=True)
+    meat = models.ForeignKey(MeatModel, on_delete=models.SET_NULL, null=True, blank=True)
+    spicy = models.ForeignKey(SpicyModel, on_delete=models.SET_NULL, null=True, blank=True)
     status = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
 
 class OrderModel(models.Model):
     table = models.ForeignKey(TableModel, on_delete=models.SET_NULL, null=True)

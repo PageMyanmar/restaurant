@@ -1,10 +1,9 @@
 {% extends 'components/base.html' %}
 
 {% block title %}Users{% endblock %}
+{% load custom_permissions %}
 
 {% block body %}
-
-
 <!--=============== BREADCRUMB ===============-->
 <section class="breadcrumb">
     <ul class="breadcrumb__list flex container">
@@ -14,21 +13,57 @@
     </ul>
 </section>
 
-<!--=============== CART ===============-->
-<section class="table__cards section--lg container">
-    <button class="btn btn-md" style="margin-bottom: 3rem;" onclick="window.location.href='/create-user/'">+ Create User</button>
-    <div class="table__card--group grid">
-        {% for user in users %}
-        <div class="table__card">
-            <div class="payment__card--banner">
-                <h4 class="payment__card--title">{{user.username}}</h4>
-            </div>
-            <div class="payment__btn flex">
-                <button class="btn btn-md" onclick="window.location.href='/update-user/{{user.id}}/'">Update</button>
-                <button class="btn btn-md delete" onclick="window.location.href='/delete-user/{{user.id}}/'">Delete</button>
-            </div>
-        </div>
-        {% endfor %}
+<section class="cart section--lg container">
+    {% if request.user|has_role_permission:'add_usermodel' %}
+    <button onclick="window.location.href='/create-user/'" style="margin-bottom: 3rem;" class="btn btn--md">+ Create User</button>
+    {% endif %}
+    <div class="table__container">
+        <table class="table">
+            <tr>
+                <th>Information</th>
+                <th style="width: 100px;">Role</th>
+                <th style="width: 100px;">Active</th>
+                <th style="width: 100px;">Staff</th>
+                <th style="width: 100px;">Superuser</th>
+                {% if request.user|has_role_permission:'change_usermodel' and request.user|has_role_permission:'delete_usermodel' %}
+                <th style="width: 300px;">Actions</th>
+                {% endif %}
+            </tr>
+            
+            {% for user in users %}
+            <tr>
+
+                <td>
+                    <h3 style="white-space: nowrap;" class="table__title">{{user.username}}</h3>
+                    <p class="table__description">{{user.email}}</p>
+                </td>
+
+                <td style="width: 100px;">
+                    <span class="table__price">{{user.role}}</span>
+                </td>
+
+                <td style="width: 100px;">
+                    <span class="table__price">{{user.is_active}}</span>
+                </td>
+
+                <td style="width: 100px;">
+                    <span class="table__price">{{user.is_staff}}</span>
+                </td>
+
+                <td style="width: 100px;">
+                    <span class="table__price">{{user.is_superuser}}</span>
+                </td>
+
+                {% if request.user|has_role_permission:'change_usermodel' and request.user|has_role_permission:'delete_usermodel' %}
+                <td style="width: 300px;">
+                    <a href="/update-user/{{user.id}}/" class="btn btn-es">Edit</a>
+                    <a href="/update-user/{{user.id}}/" class="btn btn-es delete">Delete</a>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+
+        </table>
     </div>
 
     <div class="divider">

@@ -60,17 +60,14 @@
             </li>
             {% endif %}
             
-            {% if request.user|has_role_permission:'view_rolemodel' %}
+            
             <li class="nav__item">
                 <a href="/roles/" class="nav__link {% if request.path == '/roles/'%} active-link {% endif %}">Roles</a>
             </li>
-            {% endif %}
-
-            {% if request.user|has_role_permission:'view_usermodel' %}
+          
             <li class="nav__item">
                 <a href="/users/" class="nav__link {% if request.path == '/users/'%} active-link {% endif %}">Users</a>
             </li>
-            {% endif %}
 
             <!-- <li class="nav__item">
                 <a href="/contact/"

@@ -6,13 +6,14 @@
 {% load static %}
 
 <style>
-    @media(max-width:576px){
-        .cart__btn{
-            bottom:0;
-            right:0;
+    @media(max-width:576px) {
+        .cart__btn {
+            bottom: 0;
+            right: 0;
         }
-        .products__card--container{
-            gap:0.5rem;
+
+        .products__card--container {
+            gap: 0.5rem;
         }
     }
 </style>
@@ -107,7 +108,7 @@
             <h3 id="productName_{{product.id}}" class="section__title">{{product.name}}</h3>
             <div class="product__card--image">
                 <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product__card--img">
-            </div>s
+            </div>
             <!-- Inside your modal -->
             <div class="form-group">
                 <div class="quantity_controls">
@@ -117,8 +118,53 @@
                     <button type="button" class="increase-quantity btn btn-es">+</button>
                 </div>
             </div>
+            {% if product.size.all %}
+            <div class="label__group">
+                <label>Sizes</label>
+                <div style="display: flex;flex-wrap: wrap;gap:0.5rem">
+                    <input type="hidden" name="size" id="size_{{product.id}}">
+                    {% for size in product.size.all %}
+                    <div style="display: flex;align-items: center;gap: 0.4rem;">
+                        <input type="radio" name="size" id="size_{{size.id}}" value="{{size.id}}">
+                        <label for="size_{{size.id}}">{{size.name}}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if product.meat.all %}
+            <div class="label__group">
+                <label>Meats</label>
+                <div style="display: flex;flex-wrap: wrap;gap:0.5rem">
+                    <input type="hidden" name="meat" id="meat_{{product.id}}">
+                    {% for meat in product.meat.all %}
+                    <div style="display: flex;align-items: center;gap: 0.4rem;">
+                        <input type="radio" name="meat" id="meat_{{meat.id}}" value="{{meat.id}}">
+                        <label for="meat_{{meat.id}}">{{meat.name}}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if product.spicy.all %}
+            <div class="label__group">
+                <label>Spicies</label>
+                <div style="display: flex;flex-wrap: wrap;gap:0.5rem">
+                    <input type="hidden" name="spicy" id="spicy_{{product.id}}">
+                    {% for spicy in product.spicy.all %}
+                    <div style="display: flex;align-items: center;gap: 0.4rem;">
+                        <input type="radio" name="spicy" id="spicy_{{spicy.id}}" value="{{spicy.id}}">
+                        <label for="spicy_{{spicy.id}}">{{spicy.name}}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
             <div class="form-group">
-                <label for="note_{{product.id}}">Note</label>
+                <label for="note_{{product.id}}">Notes</label>
                 <textarea id="note_{{product.id}}" placeholder="Add your note (optional)" class="form__input textarea"
                     name="note"></textarea>
             </div>
@@ -130,6 +176,33 @@
 
 <!-- JavaScript to handle modal and form actions -->
 <script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const sizeRadios = document.querySelectorAll("input[name='size']");
+        sizeRadios.forEach(radio => {
+            radio.addEventListener("change", function () {
+                const sizeId = this.value;
+                document.getElementById("size_" + productId).value = sizeId;
+            });
+        });
+
+        const meatRadios = document.querySelectorAll("input[name='meat']");
+        meatRadios.forEach(radio => {
+            radio.addEventListener("change", function () {
+                const meatId = this.value;
+                document.getElementById("meat_" + productId).value = meatId;
+            });
+        });
+
+        const spicyRadios = document.querySelectorAll("input[name='spicy']");
+        spicyRadios.forEach(radio => {
+            radio.addEventListener("change", function () {
+                const spicyId = this.value;
+                document.getElementById("spicy_" + productId).value = spicyId;
+            });
+        });
+    });
+
     document.addEventListener("DOMContentLoaded", function () {
         // Open modal when "Add to Cart" button is clicked
         const addToCartButtons = document.querySelectorAll(".cart__btn");
@@ -216,6 +289,7 @@
         height: 100%;
         /* Full height */
         background-color: rgba(0, 0, 0, 0.4);
+        overflow-y: auto;
         /* Black with transparency */
     }
 

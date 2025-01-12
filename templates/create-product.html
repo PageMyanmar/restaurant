@@ -16,21 +16,60 @@
 </section>
 
 <section class="create section--lg">
-    <div class="create__container container grid">
+    <div class="create__container role container grid">
         <div class="create__form">
             <h3 class="section__title text__center">Create Product</h3>
 
-            <form method="POST" enctype="multipart/form-data" action="/create-product/"class="form grid">
+            <form method="POST" enctype="multipart/form-data" action="/create-product/" class="form grid">
                 {% csrf_token %}
-                <input type="text" name="name" placeholder="Enter product name" required class="form__input">
-                <input type="number" name="price" placeholder="Enter product price" required class="form__input">
-                <input type="number" name="quantity" placeholder="Enter product quantity" required class="form__input">
-                <input type="file" name="image" required class="form__input">
-                <select name="category" class="form__input">
+                <div class="form__group grid">
+                    <input type="text" name="name" placeholder="Enter product name" required class="form__input">
+                    <input type="number" name="price" placeholder="Enter product price" required class="form__input">
+                </div>
+                <div class="form__group grid">
+                    <input type="number" name="quantity" placeholder="Enter product quantity" required
+                        class="form__input">
+                    <input type="file" name="image" required class="form__input">
+                </div>
+                <select name="category" required class="form__input">
+                    <option value="">Select Category</option>
                     {% for category in categories %}
                     <option value="{{category.id}}">{{category.name}}</option>
                     {% endfor %}
                 </select>
+                <div class="label__group">
+                    <label>Sizes</label>
+                    <div style="display: flex;flex-wrap: wrap;gap:0.5rem">
+                        {% for size in sizes %}
+                        <div style="display: flex;align-items: center;gap: 0.4rem;">
+                            <input type="checkbox" name="size" id="size_{{size.id}}" value="{{size.id}}">
+                            <label for="size_{{size.id}}">{{size.name}}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="label__group">
+                    <label>Meats</label>
+                    <div style="display: flex;flex-wrap: wrap;gap:0.5rem">
+                        {% for meat in meats %}
+                        <div style="display: flex;align-items: center;gap: 0.4rem;">
+                            <input type="checkbox" name="meat" id="meat_{{meat.id}}" value="{{meat.id}}">
+                            <label for="meat_{{meat.id}}">{{meat.name}}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="label__group">
+                    <label>Spicies</label>
+                    <div style="display: flex;flex-wrap: wrap;gap:0.5rem">
+                        {% for spicy in spicies %}
+                        <div style="display: flex;align-items: center;gap: 0.4rem;">
+                            <input type="checkbox" name="spicy" id="spicy_{{spicy.id}}" value="{{spicy.id}}">
+                            <label for="spicy_{{spicy.id}}">{{spicy.name}}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
                 <div class="form__btn">
                     <button class="btn" type="submit">Create</button>
                 </div>

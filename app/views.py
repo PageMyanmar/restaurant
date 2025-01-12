@@ -109,25 +109,41 @@ def AddToCart(request, p_id, t_id):
         product = ProductModel.objects.get(id=p_id)
         quantity = int(request.POST.get('quantity', 1))
 
-        if product.quantity < int(quantity):
+        # Get the selected size, meat, and spicy from the POST request
+        size_id = request.POST.get('size')
+        meat_id = request.POST.get('meat')
+        spicy_id = request.POST.get('spicy')
+
+        size = SizeModel.objects.get(id=size_id) if size_id else None
+        meat = MeatModel.objects.get(id=meat_id) if meat_id else None
+        spicy = SpicyModel.objects.get(id=spicy_id) if spicy_id else None
+
+        # Handle quantity availability
+        if product.quantity < quantity:
             messages.error(request, 'Quantity is not available')
             return redirect(f"/order/{table.id}/")
-        
+
         table.status = True
         table.save()
 
         product.quantity -= quantity
         product.save()
 
+        # Create the cart entry with the selected size, meat, and spicy
         cart = CartModel.objects.create(
-            table_id=table.id,
-            product_id=product.id,
+            table=table,
+            product=product,
             quantity=quantity,
             note=request.POST.get('note'),
+            size=size,
+            meat=meat,
+            spicy=spicy,
+            total_price=product.price * quantity
         )
         cart.save()
+
         messages.success(request, f'({cart.quantity}) {cart.product.name} are added to cart successfully! {cart.note}')
-        return redirect(f"/order/{table.id}/")  # Redirect back to the order page
+        return redirect(f"/order/{table.id}/")
 
 def UpdateCart(request,id):
     cart = CartModel.objects.get(id = id)
@@ -194,8 +210,7 @@ def CreateCategory(request):
         return render(request,"create-category.html")
     if request.method == "POST":
         category = CategoryModel.objects.create(
-            name = request.POST.get('name'),
-            image = request.FILES.get('image')
+            name = request.POST.get('name')
         )
         category.save()
         messages.success(request,"Category is created successfully!")
@@ -212,9 +227,6 @@ def UpdateCategory(request,id):
         return render(request,"update-category.html",context)
     if request.method == "POST":
         category.name = request.POST.get('name')
-        if request.FILES.get('image'):
-            category.image.delete()
-            category.image = request.FILES.get('image')
         category.save()
         messages.success(request,"Category is updated successfully")
         return redirect("/categories/")
@@ -223,8 +235,6 @@ def UpdateCategory(request,id):
 @role_permission_required('app.delete_categorymodel')
 def DeleteCategory(request,id):
     category = CategoryModel.objects.get(id = id)
-    if category.image:
-        category.image.delete()
     category.delete()
     messages.success(request,"Category is deleted successfully!")
     return redirect('/categories/')
@@ -360,9 +370,15 @@ def Products(request):
 @role_permission_required('app.add_productmodel')
 def CreateProduct(request):
     categories = CategoryModel.objects.all().order_by('-created_at')
+    sizes = SizeModel.objects.all().order_by('-created_at')
+    spicies = SpicyModel.objects.all().order_by('-created_at')
+    meats = MeatModel.objects.all().order_by('-created_at')
     if request.method == "GET":
         context = {
-            'categories':categories
+            'categories':categories,
+            'sizes':sizes,
+            'spicies':spicies,
+            'meats':meats
         }
         return render(request,"create-product.html",context)
     if request.method == "POST":
@@ -374,6 +390,9 @@ def CreateProduct(request):
             quantity = request.POST.get('quantity')
         )
         product.save()
+        product.size.set(request.POST.getlist('size'))
+        product.spicy.set(request.POST.getlist('spicy'))
+        product.meat.set(request.POST.getlist('meat'))
         messages.success(request,"Product is created successfully!")
         return redirect('/products/')
     
@@ -381,11 +400,17 @@ def CreateProduct(request):
 @role_permission_required('app.change_productmodel')
 def UpdateProduct(request,id):
     categories = CategoryModel.objects.all().order_by('-created_at')
+    sizes = SizeModel.objects.all().order_by('-created_at')
+    spicies = SpicyModel.objects.all().order_by('-created_at')
+    meats = MeatModel.objects.all().order_by('-created_at')
     product = ProductModel.objects.get(id = id)
     if request.method == "GET":
         context = {
             'categories':categories,
-            'product':product
+            'product':product,
+            'sizes':sizes,
+            'spicies':spicies,
+            'meats':meats
         }
         return render(request,"update-product.html",context)
     
@@ -398,6 +423,9 @@ def UpdateProduct(request,id):
         product.category_id = request.POST.get('category')
         product.quantity = request.POST.get('quantity')
         product.save()
+        product.size.set(request.POST.getlist('size'))
+        product.spicy.set(request.POST.getlist('spicy'))
+        product.meat.set(request.POST.getlist('meat'))
         messages.success(request,"Product is updated successfully")
         return redirect('/products/')
     
@@ -537,7 +565,7 @@ def Order(request, id):
     context = {
         "table": table,
         "products": products,
-        "categories": categories
+        "categories": categories,
     }
     return render(request, 'order.html',context)
 
@@ -673,3 +701,141 @@ def DeleteUser(request, id):
     user.delete()
     messages.success(request, "User was deleted!")
     return redirect('/users/')
+
+# View to render the main page with a payment list
+@login_required(login_url=settings.LOGIN_URL)
+@role_permission_required('app.view_sizemodel')
+def Sizes(request):
+    sizes = SizeModel.objects.all()
+    context = {
+        'sizes':sizes
+    }
+    return render(request, 'sizes.html', context)
+    
+@login_required(login_url=settings.LOGIN_URL)
+@role_permission_required('app.add_sizemodel')
+def CreateSize(request):
+    if request.method == "GET":
+        return render(request,"create-size.html")
+    if request.method == "POST":
+        size = SizeModel.objects.create(
+            name = request.POST.get('name')
+        )
+        size.save()
+        messages.success(request,"size is created successfully!")
+        return redirect('/sizes/')
+
+@login_required(login_url=settings.LOGIN_URL)
+@role_permission_required('app.change_sizemodel')
+def UpdateSize(request,id):
+    size = SizeModel.objects.get(id = id)
+    if request.method == "GET":
+        context = {
+            'size':size
+        }
+        return render(request,"update-size.html",context)
+    if request.method == "POST":
+        size.name = request.POST.get('name')
+        size.save()
+        messages.success(request,"size is updated successfully!")
+        return redirect('/sizes/')
+
+@login_required(login_url=settings.LOGIN_URL)
+@role_permission_required('app.delete_sizemodel')
+def DeleteSize(request,id):
+    size = SizeModel.objects.get(id = id)
+    size.delete()
+    messages.success(request,"size is deleted successfully!")
+    return redirect('/sizes/')
+
+# View to render the main page with a payment list
+@login_required(login_url=settings.LOGIN_URL)
+@role_permission_required('app.view_meatmodel')
+def Meats(request):
+    meats = MeatModel.objects.all()
+    context = {
+        'meats':meats
+    }
+    return render(request, 'meats.html', context)
+    
+@login_required(login_url=settings.LOGIN_URL)
+@role_permission_required('app.add_meatmodel')
+def CreateMeat(request):
+    if request.method == "GET":
+        return render(request,"create-meat.html")
+    if request.method == "POST":
+        meat = MeatModel.objects.create(
+            name = request.POST.get('name')
+        )
+        meat.save()
+        messages.success(request,"meat is created successfully!")
+        return redirect('/meats/')
+
+@login_required(login_url=settings.LOGIN_URL)
+@role_permission_required('app.change_meatmodel')
+def UpdateMeat(request,id):
+    meat = MeatModel.objects.get(id = id)
+    if request.method == "GET":
+        context = {
+            'meat':meat
+        }
+        return render(request,"update-meat.html",context)
+    if request.method == "POST":
+        meat.name = request.POST.get('name')
+        meat.save()
+        messages.success(request,"meat is updated successfully!")
+        return redirect('/meats/')
+
+@login_required(login_url=settings.LOGIN_URL)
+@role_permission_required('app.delete_meatmodel')
+def DeleteMeat(request,id):
+    meat = MeatModel.objects.get(id = id)
+    meat.delete()
+    messages.success(request,"meat is deleted successfully!")
+    return redirect('/meats/')
+
+# View to render the main page with a payment list
+@login_required(login_url=settings.LOGIN_URL)
+@role_permission_required('app.view_spicymodel')
+def Spicies(request):
+    spicies = SpicyModel.objects.all()
+    context = {
+        'spicies':spicies
+    }
+    return render(request, 'spicies.html', context)
+    
+@login_required(login_url=settings.LOGIN_URL)
+@role_permission_required('app.add_spicymodel')
+def CreateSpicy(request):
+    if request.method == "GET":
+        return render(request,"create-spicy.html")
+    if request.method == "POST":
+        spicy = SpicyModel.objects.create(
+            name = request.POST.get('name')
+        )
+        spicy.save()
+        messages.success(request,"spicy is created successfully!")
+        return redirect('/spicies/')
+
+@login_required(login_url=settings.LOGIN_URL)
+@role_permission_required('app.change_spicymodel')
+def UpdateSpicy(request,id):
+    spicy = SpicyModel.objects.get(id = id)
+    if request.method == "GET":
+        context = {
+            'spicy':spicy
+        }
+        return render(request,"update-spicy.html",context)
+    if request.method == "POST":
+        spicy.name = request.POST.get('name')
+        spicy.save()
+        messages.success(request,"spicy is updated successfully!")
+        return redirect('/spicies/')
+
+@login_required(login_url=settings.LOGIN_URL)
+@role_permission_required('app.delete_spicymodel')
+def DeleteSpicy(request,id):
+    spicy = SpicyModel.objects.get(id = id)
+    spicy.delete()
+    messages.success(request,"spicy is deleted successfully!")
+    return redirect('/spicies/')

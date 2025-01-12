@@ -4,6 +4,8 @@
 
 {% block body %}
 
+{% load custom_permissions %}
+
 
 <!--=============== BREADCRUMB ===============-->
 <section class="breadcrumb">
@@ -15,20 +17,44 @@
 </section>
 
 <!--=============== CART ===============-->
-<section class="table__cards section--lg container">
-    <button class="btn btn-md" style="margin-bottom: 3rem;" onclick="window.location.href='/create-role/'">+ Create Role</button>
-    <div class="table__card--group grid">
-        {% for role in roles %}
-        <div class="table__card">
-            <div class="payment__card--banner">
-                <h4 class="payment__card--title">{{role.name}}</h4>
-            </div>
-            <div class="payment__btn flex">
-                <button class="btn btn-md" onclick="window.location.href='/update-role/{{role.id}}/'">Update</button>
-                <button class="btn btn-md delete" onclick="window.location.href='/delete-role/{{role.id}}/'">Delete</button>
-            </div>
-        </div>
-        {% endfor %}
+<section class="cart section--lg container">
+    {% if request.user|has_role_permission:'add_rolemodel' %}
+    <button onclick="window.location.href='/create-role/'" style="margin-bottom: 3rem;" class="btn btn--md">+ Create
+        Role</button>
+    {% endif %}
+    <div class="table__container">
+        <table class="table">
+            <tr>
+                <th>Name</th>
+                <th>Permissions</th>
+                {% if request.user|has_role_permission:'change_rolemodel' and request.user|has_role_permission:'delete_rolemodel' %}
+                <th style="width: 300px;">Actions</th>
+                {% endif %}
+            </tr>
+
+            {% for role in roles %}
+            <tr>
+
+                <td>
+                    <h3 style="white-space: nowrap;" class="table__title">{{role.name}}</h3>
+                </td>
+
+                <td>
+                    {% for permission in role.permissions.all %}
+                    <span class="role__badge">{{permission.name}}</span>
+                    {% endfor %}
+                </td>
+
+                {% if request.user|has_role_permission:'change_rolemodel' and request.user|has_role_permission:'delete_rolemodel' %}
+                <td style="width: 300px;">
+                    <a href="/update-role/{{role.id}}/" class="btn btn-es">Edit</a>
+                    <a href="/update-role/{{role.id}}/" class="btn btn-es delete">Delete</a>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+
+        </table>
     </div>
 
     <div class="divider">

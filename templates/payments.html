@@ -4,32 +4,55 @@
 
 {% block body %}
 
+{% load custom_permissions %}
+
 
 <!--=============== BREADCRUMB ===============-->
 <section class="breadcrumb">
     <ul class="breadcrumb__list flex container">
         <li><a href="/" class="breadcrumb__link">Home</a></li>
         <li><span class="breadcrumb__link">></span></li>
-        <li><span class="breadcrumb__link">payments</span></li>
+        <li><span class="breadcrumb__link">Payments</span></li>
     </ul>
 </section>
 
 <!--=============== CART ===============-->
-<section class="table__cards section--lg container">
-    <button class="btn btn-md" style="margin-bottom: 3rem;" onclick="window.location.href='/create-payment/'">+ Create payment</button>
-    <div class="table__card--group grid">
-        {% for payment in payments %}
-        <div class="table__card">
-            <div class="payment__card--banner">
-                <h4 class="payment__card--title">{{payment.name}}</h4>
-                <p class="payment__card--number">{{payment.number}}</p>
-            </div>
-            <div class="payment__btn flex">
-                <button class="btn btn-md" onclick="window.location.href='/update-payment/{{payment.id}}/'">Update</button>
-                <button class="btn btn-md delete" onclick="window.location.href='/delete-payment/{{payment.id}}/'">Delete</button>
-            </div>
-        </div>
-        {% endfor %}
+<section class="cart section--lg container">
+    {% if request.user|has_role_permission:'add_paymentmodel' %}
+    <button onclick="window.location.href='/create-payment/'" style="margin-bottom: 3rem;" class="btn btn--md">+ Create
+        Payment Method</button>
+    {% endif %}
+    <div class="table__container">
+        <table class="table">
+            <tr>
+                <th>Payment Method</th>
+                <th>Number</th>
+                {% if request.user|has_role_permission:'change_paymentmodel' and request.user|has_role_permission:'delete_paymentmodel' %}
+                <th style="width: 300px;">Actions</th>
+                {% endif %}
+            </tr>
+
+            {% for payment in payments %}
+            <tr>
+
+                <td>
+                    <h3 style="white-space: nowrap;" class="table__title">{{payment.name}}</h3>
+                </td>
+
+                <td>
+                    <h3 style="white-space: nowrap;" class="table__title">{{payment.number}}</h3>
+                </td>
+
+                {% if request.user|has_role_permission:'change_paymentmodel' and request.user|has_role_permission:'delete_paymentmodel' %}
+                <td style="width: 300px;">
+                    <a href="/update-payment/{{payment.id}}/" class="btn btn-es">Edit</a>
+                    <a href="/update-payment/{{payment.id}}/" class="btn btn-es delete">Delete</a>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+
+        </table>
     </div>
 
     <div class="divider">

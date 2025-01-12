@@ -85,6 +85,24 @@ urlpatterns = [
 
     path('checkout-success/',CheckoutSuccess),
 
+    # Size
+    path('sizes/',Sizes),
+    path('create-size/',CreateSize),
+    path('update-size/<int:id>/',UpdateSize),
+    path('delete-size/<int:id>/',DeleteSize),
+
+    # Meat
+    path('meats/',Meats),
+    path('create-meat/',CreateMeat),
+    path('update-meat/<int:id>/',UpdateMeat),
+    path('delete-meat/<int:id>/',DeleteMeat),
+
+    # Spicy
+    path('spicies/',Spicies),
+    path('create-spicy/',CreateSpicy),
+    path('update-spicy/<int:id>/',UpdateSpicy),
+    path('delete-spicy/<int:id>/',DeleteSpicy),
+
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:

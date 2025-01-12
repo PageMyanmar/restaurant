@@ -1,0 +1,63 @@
+{% extends 'components/base.html' %}
+
+{% block title %}Meats{% endblock %}
+
+{% block body %}
+
+{% load custom_permissions %}
+
+
+<!--=============== BREADCRUMB ===============-->
+<section class="breadcrumb">
+    <ul class="breadcrumb__list flex container">
+        <li><a href="/" class="breadcrumb__link">Home</a></li>
+        <li><span class="breadcrumb__link">></span></li>
+        <li><span class="breadcrumb__link">Meats</span></li>
+    </ul>
+</section>
+
+<!--=============== CART ===============-->
+<section class="cart section--lg container">
+    {% if request.user|has_role_permission:'add_productmodel' %}
+    <div class="flex" style="margin-bottom: 3rem;">
+        <button onclick="window.location.href='/create-meat/'"class="btn btn--md">+ Create Meat</button>
+        <button onclick="window.location.href='/products/'" class="btn btn--md">Products</button>
+        <button onclick="window.location.href='/sizes/'" class="btn btn--md">Sizes</button>
+        <button onclick="window.location.href='/spicies/'" class="btn btn--md">Spicies</button>
+    </div>
+    {% endif %}
+    <div class="table__container">
+        <table class="table">
+            <tr>
+                <th>Meat</th>
+                {% if request.user|has_role_permission:'change_meatmodel' and request.user|has_role_permission:'delete_meatmodel' %}
+                <th style="width: 300px;">Actions</th>
+                {% endif %}
+            </tr>
+
+            {% for meat in meats %}
+            <tr>
+
+                <td>
+                    <h3 style="white-space: nowrap;" class="table__title">{{meat.name}}</h3>
+                </td>
+
+                {% if request.user|has_role_permission:'change_meatmodel' and request.user|has_role_permission:'delete_meatmodel' %}
+                <td style="width: 300px;">
+                    <a href="/update-meat/{{meat.id}}/" class="btn btn-es">Edit</a>
+                    <a href="/update-meat/{{meat.id}}/" class="btn btn-es delete">Delete</a>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+
+        </table>
+    </div>
+
+    <div class="divider">
+        <i class="fi fi-rs-fingerprint"></i>
+    </div>
+
+</section>
+
+{% endblock %}

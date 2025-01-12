@@ -13,33 +13,64 @@
     </ul>
 </section>
 
-<section class="products__cards section--lg container">
+<section class="cart section--lg container">
     {% if request.user|has_role_permission:'add_productmodel' %}
-    <button onclick="window.location.href='/create-product/'" style="margin-bottom: 3rem;" class="btn btn--md">+ Create Product</button>
-    {% endif %}
-    <div class="products__card--container grid">
-        {% for product in products %}
-        <div class="product__card--item" id="product__card--item-{{ product.id }}">
-            <div class="product__card--banner">
-                <div class="product__card--image">
-                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product__card--img">
-                </div>
-                <div class="product__card--content">
-                    <span class="product__card--category">{{product.category.name}}</span>
-                    <h3 class="product__card--title">{{product.name}}</h3>
-                    <span class="product__card--quantity">Stock : ({{product.quantity}})</span>
-                    <span class="product__card--price new__price">Price : {{product.price}} MMK</span>
-                </div>
-                {% if request.user|has_role_permission:'change_productmodel' and request.user|has_role_permission:'delete_productmodel' %}
-                <div class="product__card--actions flex">
-                    <button onclick="window.location.href='/update-product/{{product.id}}/'" class="btn btn--sm">Edit</button>
-                    <button onclick="window.location.href='/delete-product/{{product.id}}/'" class="btn btn--sm delete">Delete</button>
-                </div>
-                {% endif %}
-            </div>
-        </div>
-        {% endfor %}
+    <div class="flex" style="margin-bottom: 3rem;">
+        <button onclick="window.location.href='/create-product/'"class="btn btn--md">+ Create Product</button>
+        <button onclick="window.location.href='/sizes/'" class="btn btn--md">Sizes</button>
+        <button onclick="window.location.href='/meats/'" class="btn btn--md">Meats</button>
+        <button onclick="window.location.href='/spicies/'" class="btn btn--md">Spicies</button>
     </div>
+    {% endif %}
+    <div class="table__container">
+        <table class="table">
+            <tr>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Stock</th>
+                {% if request.user|has_role_permission:'change_productmodel' and request.user|has_role_permission:'delete_productmodel' %}
+                <th>Actions</th>
+                {% endif %}
+            </tr>
+            
+            {% for product in products %}
+            <tr>
+                <td>
+                    <div class="table__image">
+                        <img src="{{product.image.url}}" alt="{{product.name}}" class="table__img">
+                    </div>
+                </td>
+
+                <td>
+                    <h3 style="white-space: nowrap;" class="table__title">{{product.name}}</h3>
+                    <p class="table__description">{{product.category.name}}</p>
+                </td>
+
+                <td>
+                    <span class="table__price">{{product.price}} MMK</span>
+                </td>
+
+                <td>
+                    <span class="table__subtotal">{% if product.quantity == 0 %}Out of Stock{% else %}{{product.quantity}}{% endif %}</span>
+                </td>
+
+                {% if request.user|has_role_permission:'change_productmodel' and request.user|has_role_permission:'delete_productmodel' %}
+                <td>
+                    <a href="/update-product/{{product.id}}/" class="btn btn-es">Edit</a>
+                    <a href="/delete-product/{{product.id}}/" class="btn btn-es delete">Delete</a>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+
+        </table>
+    </div>
+
+    <div class="divider">
+        <i class="fi fi-rs-fingerprint"></i>
+    </div>
+
 </section>
 
 {% endblock %}
