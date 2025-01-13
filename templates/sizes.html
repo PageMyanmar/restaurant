@@ -45,7 +45,7 @@
                 {% if request.user|has_role_permission:'change_sizemodel' and request.user|has_role_permission:'delete_sizemodel' %}
                 <td style="width: 300px;">
                     <a href="/update-size/{{size.id}}/" class="btn btn-es">Edit</a>
-                    <a href="/update-size/{{size.id}}/" class="btn btn-es delete">Delete</a>
+                    <a href="/delete-size/{{size.id}}/" class="btn btn-es delete">Delete</a>
                 </td>
                 {% endif %}
             </tr>

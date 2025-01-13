@@ -42,7 +42,7 @@ class ProductModel(models.Model):
     meat = models.ManyToManyField(MeatModel)
     spicy = models.ManyToManyField(SpicyModel)
     price = models.IntegerField(default=0,null=True,blank=True)
-    quantity = models.IntegerField(default=0, verbose_name="Current Stock")
+    stock = models.BooleanField(default=False)
     category = models.ForeignKey(CategoryModel,on_delete=models.SET_NULL,null=True,default=None)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -56,7 +56,6 @@ class PaymentModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-
 class CartModel(models.Model):
     table = models.ForeignKey(TableModel, on_delete=models.SET_NULL, null=True)
     product = models.ForeignKey(ProductModel, on_delete=models.CASCADE)
@@ -67,9 +66,9 @@ class CartModel(models.Model):
     meat = models.ForeignKey(MeatModel, on_delete=models.SET_NULL, null=True, blank=True)
     spicy = models.ForeignKey(SpicyModel, on_delete=models.SET_NULL, null=True, blank=True)
     status = models.BooleanField(default=False)
+    takeaway = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
 
 class OrderModel(models.Model):
     table = models.ForeignKey(TableModel, on_delete=models.SET_NULL, null=True)

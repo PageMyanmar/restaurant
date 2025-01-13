@@ -12,9 +12,6 @@
     let icon, background, textColor;
     let messageTag = '{{ message.tags|escapejs }}'.toLowerCase(); // Get the actual tag name from settings.py
 
-    // Debugging output
-    console.log("Message Tag:", messageTag);
-
     if (messageTag === 'alert-success') {
         icon = 'success';
         background = '#155724';
@@ -39,24 +36,24 @@
 
     Swal.fire({
         toast: true,
-        position: 'top-end', // Adjust position as needed
+        position: 'top-end',
         icon: icon,
         title: '{{ message|escapejs }}',
         showConfirmButton: false,
         timer: 3000,
         timerProgressBar: true,
-        background: background, // Use the determined background color
-        color: textColor // Use the determined text color
+        background: background,
+        color: textColor
     });
     {% endfor %}
     {% endif %}
 </script>
 
-
 <!-- WebSocket Real-Time Messages -->
 <script>
     // Initialize WebSocket connection
-    const socket = new WebSocket(`ws://${window.location.host}/ws/messages/`);
+    const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    const socket = new WebSocket(`${protocol}://${window.location.host}/ws/messages/`);
 
     // Log connection events
     socket.onopen = function () {
@@ -70,6 +67,8 @@
     socket.onclose = function (event) {
         console.log('WebSocket closed:', event.code, event.reason);
     };
+
+    let positionY = 0; // Track vertical position to stack notifications
 
     // Handle incoming messages
     socket.onmessage = function (event) {
@@ -102,17 +101,24 @@
             textColor = '#d1ecf1';
         }
 
-        // Display the message using SweetAlert2
+        // Display each incoming message in sequence
         Swal.fire({
             toast: true,
-            position: 'top-end', // Adjust position as needed
+            position: 'top-start', // Stack notifications at the top-left
             icon: icon,
-            title: message,
+            title: message, // The message text
             showConfirmButton: true,
-            // timer: 3000,
-            // timerProgressBar: true,
-            background: background, // Use the determined background color
-            color: textColor // Use the determined text color
+            background: background,
+            color: textColor,
+            // timer: 3000, // Optional: set timer for auto-close
+            willClose: () => {
+                // Move the next notification below the previous one
+                positionY += 40;  // Adjust the number based on your need for spacing
+            },
+            didOpen: () => {
+                // Adjust the margin-top dynamically to stack notifications
+                document.querySelector('.swal2-toast').style.marginTop = `${positionY}px`;
+            }
         });
     };
 </script>

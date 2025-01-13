@@ -3,6 +3,53 @@
 {% block title %}Create Product {% endblock %}
 
 {% block body %}
+<style>
+    /* Toggle switch style */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 20px;
+    }
+
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 34px;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 14px;
+        width: 14px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+
+    input:checked+.slider {
+        background-color: var(--first-color);
+    }
+
+    input:checked+.slider:before {
+        transform: translateX(20px);
+    }
+</style>
 
 <!--=============== BREADCRUMB ===============-->
 <section class="breadcrumb">
@@ -27,36 +74,43 @@
                     <input type="number" name="price" placeholder="Enter product price" required class="form__input">
                 </div>
                 <div class="form__group grid">
-                    <input type="number" name="quantity" placeholder="Enter product quantity" required
-                        class="form__input">
                     <input type="file" name="image" required class="form__input">
-                </div>
-                <select name="category" required class="form__input">
-                    <option value="">Select Category</option>
-                    {% for category in categories %}
-                    <option value="{{category.id}}">{{category.name}}</option>
-                    {% endfor %}
-                </select>
-                <div class="label__group">
-                    <label>Sizes</label>
-                    <div style="display: flex;flex-wrap: wrap;gap:0.5rem">
-                        {% for size in sizes %}
-                        <div style="display: flex;align-items: center;gap: 0.4rem;">
-                            <input type="checkbox" name="size" id="size_{{size.id}}" value="{{size.id}}">
-                            <label for="size_{{size.id}}">{{size.name}}</label>
-                        </div>
+                    <select name="category" required class="form__input">
+                        <option value="">Select Category</option>
+                        {% for category in categories %}
+                        <option value="{{category.id}}">{{category.name}}</option>
                         {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label class="switch">
+                        <input type="checkbox" name="stock" id="stock">
+                        <span class="slider"></span>
+                    </label>
+                    <label for="stock">Stock Status</label>
+                </div>
+                <div class="form__group grid">
+                    <div class="label__group">
+                        <label>Sizes</label>
+                        <div style="display: flex;flex-wrap: wrap;gap:0.5rem">
+                            {% for size in sizes %}
+                            <div style="display: flex;align-items: center;gap: 0.4rem;">
+                                <input type="checkbox" name="size" id="size_{{size.id}}" value="{{size.id}}">
+                                <label for="size_{{size.id}}">{{size.name}}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
                     </div>
-                </div>
-                <div class="label__group">
-                    <label>Meats</label>
-                    <div style="display: flex;flex-wrap: wrap;gap:0.5rem">
-                        {% for meat in meats %}
-                        <div style="display: flex;align-items: center;gap: 0.4rem;">
-                            <input type="checkbox" name="meat" id="meat_{{meat.id}}" value="{{meat.id}}">
-                            <label for="meat_{{meat.id}}">{{meat.name}}</label>
+                    <div class="label__group">
+                        <label>Meats</label>
+                        <div style="display: flex;flex-wrap: wrap;gap:0.5rem">
+                            {% for meat in meats %}
+                            <div style="display: flex;align-items: center;gap: 0.4rem;">
+                                <input type="checkbox" name="meat" id="meat_{{meat.id}}" value="{{meat.id}}">
+                                <label for="meat_{{meat.id}}">{{meat.name}}</label>
+                            </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
                     </div>
                 </div>
                 <div class="label__group">

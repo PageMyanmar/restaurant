@@ -52,7 +52,7 @@
                 </td>
 
                 <td>
-                    <span class="table__subtotal">{% if product.quantity == 0 %}Out of Stock{% else %}{{product.quantity}}{% endif %}</span>
+                    <span class="table__subtotal">{% if product.stock == False %}Out of Stock{% else %}In Stock{% endif %}</span>
                 </td>
 
                 {% if request.user|has_role_permission:'change_productmodel' and request.user|has_role_permission:'delete_productmodel' %}

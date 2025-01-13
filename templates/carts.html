@@ -4,6 +4,55 @@
 
 {% block body %}
 
+
+<style>
+    /* Toggle switch style */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 20px;
+    }
+
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 34px;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 14px;
+        width: 14px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+
+    input:checked+.slider {
+        background-color: var(--first-color);
+    }
+
+    input:checked+.slider:before {
+        transform: translateX(20px);
+    }
+</style>
+
 <!--=============== BREADCRUMB ===============-->
 <section class="breadcrumb">
     <ul class="breadcrumb__list flex container">
@@ -38,19 +87,16 @@
                     <span class="product__card--price new__price">{{ cart.product.price }} MMK</span>
                     <span class="product__card--subtotal" style="margin-top:0.8rem;">Total : <span class="item-subtotal">{{ cart.total_price }}</span>
                         MMK</span>
-                    <p>{{ cart.note }}</p>
                 </div>
-                {% if cart.status == False %}
                 <div class="product__card--actions flex">
                     <!-- Update Button -->
-                    <button class="btn btn--sm update-cart" data-cart-id="{{ cart.id }}"
+                    <button class="btn btn--sm update-cart {% if cart.status == True %}disabled{% endif %}" data-cart-id="{{ cart.id }}"
                         data-cart-name="{{ cart.product.name }}"
-                        data-cart-price="{{ cart.product.price }}">Update</button>
+                        data-cart-price="{{ cart.product.price }}" {% if cart.status == True %} disabled {% endif %}>Update</button>
                     <!-- Remove Button -->
-                    <button class="btn btn--sm delete delete-cart"
-                        onclick="window.location.href='/remove-from-cart/{{cart.id}}/'">Remove</button>
+                    <button class="btn btn--sm delete-cart {% if cart.status == True %}disabled{% else %}delete{% endif %}"
+                        onclick="window.location.href='/remove-from-cart/{{cart.id}}/'"{% if cart.status == True %} disabled {% endif %}>Remove</button>
                 </div>
-                {% endif %}
             </div>
         </div>
         {% endfor %}
@@ -79,6 +125,66 @@
                     <button type="button" class="increase-quantity btn btn-es">+</button>
                 </div>
             </div>
+            
+                        <!-- Sizes Selection -->
+            {% if cart.product.size.all %}
+            <div class="label__group">
+                <label>Sizes</label>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                    {% for size in cart.product.size.all %}
+                    <div style="display: flex; align-items: center; gap: 0.4rem;">
+                        <!-- Updated to make the id unique by including the cart.id -->
+                        <input required type="radio" name="size" id="size_{{cart.id}}_{{size.id}}" value="{{size.id}}"
+                        {% if size.id == cart.size.id %} checked {% endif %}>
+                        <label for="size_{{cart.id}}_{{size.id}}">{{size.name}}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Meats Selection -->
+            {% if cart.product.meat.all %}
+            <div class="label__group">
+                <label>Meats</label>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                    {% for meat in cart.product.meat.all %}
+                    <div style="display: flex; align-items: center; gap: 0.4rem;">
+                        <!-- Updated to make the id unique by including the cart.id -->
+                        <input required type="radio" name="meat" id="meat_{{cart.id}}_{{meat.id}}" value="{{meat.id}}"
+                        {% if meat.id == cart.meat.id %} checked {% endif %}>
+                        <label for="meat_{{cart.id}}_{{meat.id}}">{{meat.name}}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Spices Selection -->
+            {% if cart.product.spicy.all %}
+            <div class="label__group">
+                <label>Spices</label>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                    {% for spicy in cart.product.spicy.all %}
+                    <div style="display: flex; align-items: center; gap: 0.4rem;">
+                        <!-- Updated to make the id unique by including the cart.id -->
+                        <input required type="radio" name="spicy" id="spicy_{{cart.id}}_{{spicy.id}}" value="{{spicy.id}}"
+                        {% if spicy.id == cart.spicy.id %} checked {% endif %}>
+                        <label for="spicy_{{cart.id}}_{{spicy.id}}">{{spicy.name}}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div>
+                <label class="switch">
+                    <input type="checkbox" {% if cart.takeaway %} checked {% endif %} name="takeaway" id="takeaway">
+                    <span class="slider"></span>
+                </label>
+                <label for="takeaway">Takeaway</label>
+            </div>
+
             <div class="form-group">
                 <label for="note_{{cart.id}}">Note</label>
                 <textarea id="note_{{cart.id}}" placeholder="Add your note (optional)" class="form__input textarea"
@@ -92,6 +198,7 @@
 
 <!-- JavaScript to handle modal and form actions -->
 <script>
+    
     document.addEventListener("DOMContentLoaded", function () {
         // Open modal when "Add to Cart" button is clicked
         const addToCartButtons = document.querySelectorAll(".update-cart");
@@ -170,6 +277,7 @@
         z-index: 999999999;
         /* Sit on top */
         left: 0;
+        overflow-y: auto;
         top: 0;
         width: 100%;
         /* Full width */

@@ -16,6 +16,51 @@
             gap: 0.5rem;
         }
     }
+    /* Toggle switch style */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 20px;
+    }
+
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 34px;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 14px;
+        width: 14px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+
+    input:checked+.slider {
+        background-color: var(--first-color);
+    }
+
+    input:checked+.slider:before {
+        transform: translateX(20px);
+    }
 </style>
 
 
@@ -43,7 +88,7 @@
                         <div class="product__card--content">
                             <h3 class="product__card--title">{{ product.name }}</h3>
                             <span class="product__card--price new__price">{{ product.price }} MMK</span>
-                            {% if product.quantity != 0 %}
+                            {% if product.stock == True %}
                             <button type="button" class="action__btn cart__btn" aria-label="Add to Cart"
                                 data-table-id="{{table.id}}" data-product-id="{{ product.id }}"
                                 data-product-name="{{ product.name }}" data-product-price="{{ product.price }}">
@@ -51,7 +96,7 @@
                             </button>
                             {% endif %}
                         </div>
-                        {% if product.quantity == 0 %}
+                        {% if product.stock == False %}
                         <div class="product__badge light-pink">Out of stock</div>
                         {% endif %}
                     </div>
@@ -73,7 +118,7 @@
                         <div class="product__card--content">
                             <h3 class="product__card--title">{{ product.name }}</h3>
                             <span class="product__card--price new__price">{{ product.price }} MMK</span>
-                            {% if product.quantity != 0 %}
+                            {% if product.stock == True %}
                             <button type="button" class="action__btn cart__btn" aria-label="Add to Cart"
                                 data-table-id="{{table.id}}" data-product-id="{{ product.id }}"
                                 data-product-name="{{ product.name }}" data-product-price="{{ product.price }}">
@@ -81,7 +126,7 @@
                             </button>
                             {% endif %}
                         </div>
-                        {% if product.quantity == 0 %}
+                        {% if product.stock == False %}
                         <div class="product__badge light-pink">Out of stock</div>
                         {% endif %}
                     </div>
@@ -125,7 +170,7 @@
                     <input type="hidden" name="size" id="size_{{product.id}}">
                     {% for size in product.size.all %}
                     <div style="display: flex;align-items: center;gap: 0.4rem;">
-                        <input type="radio" name="size" id="size_{{size.id}}" value="{{size.id}}">
+                        <input required type="radio" name="size" id="size_{{size.id}}" value="{{size.id}}">
                         <label for="size_{{size.id}}">{{size.name}}</label>
                     </div>
                     {% endfor %}
@@ -140,7 +185,7 @@
                     <input type="hidden" name="meat" id="meat_{{product.id}}">
                     {% for meat in product.meat.all %}
                     <div style="display: flex;align-items: center;gap: 0.4rem;">
-                        <input type="radio" name="meat" id="meat_{{meat.id}}" value="{{meat.id}}">
+                        <input required type="radio" name="meat" id="meat_{{meat.id}}" value="{{meat.id}}">
                         <label for="meat_{{meat.id}}">{{meat.name}}</label>
                     </div>
                     {% endfor %}
@@ -155,13 +200,21 @@
                     <input type="hidden" name="spicy" id="spicy_{{product.id}}">
                     {% for spicy in product.spicy.all %}
                     <div style="display: flex;align-items: center;gap: 0.4rem;">
-                        <input type="radio" name="spicy" id="spicy_{{spicy.id}}" value="{{spicy.id}}">
+                        <input required type="radio" name="spicy" id="spicy_{{spicy.id}}" value="{{spicy.id}}">
                         <label for="spicy_{{spicy.id}}">{{spicy.name}}</label>
                     </div>
                     {% endfor %}
                 </div>
             </div>
             {% endif %}
+
+            <div>
+                <label class="switch">
+                    <input type="checkbox" name="takeaway" id="takeaway">
+                    <span class="slider"></span>
+                </label>
+                <label for="takeaway">Takeaway</label>
+            </div>
 
             <div class="form-group">
                 <label for="note_{{product.id}}">Notes</label>

@@ -118,15 +118,8 @@ def AddToCart(request, p_id, t_id):
         meat = MeatModel.objects.get(id=meat_id) if meat_id else None
         spicy = SpicyModel.objects.get(id=spicy_id) if spicy_id else None
 
-        # Handle quantity availability
-        if product.quantity < quantity:
-            messages.error(request, 'Quantity is not available')
-            return redirect(f"/order/{table.id}/")
-
         table.status = True
         table.save()
-
-        product.quantity -= quantity
         product.save()
 
         # Create the cart entry with the selected size, meat, and spicy
@@ -138,26 +131,50 @@ def AddToCart(request, p_id, t_id):
             size=size,
             meat=meat,
             spicy=spicy,
-            total_price=product.price * quantity
+            total_price=product.price * quantity,
+            takeaway = request.POST.get('takeaway') == 'on'
         )
         cart.save()
 
         messages.success(request, f'({cart.quantity}) {cart.product.name} are added to cart successfully! {cart.note}')
         return redirect(f"/order/{table.id}/")
-
-def UpdateCart(request,id):
-    cart = CartModel.objects.get(id = id)
+ 
+def UpdateCart(request, id):
+    # Get the cart item to be updated
+    cart = CartModel.objects.get(id=id)
+    
     if request.method == 'POST':
-        cart.quantity = int(request.POST.get('quantity'))
-        cart.note = request.POST.get('note')
+        # Get the updated quantity and note from the form
+        quantity = int(request.POST.get('quantity'))
+        note = request.POST.get('note')
+
+        # Get the selected size, meat, and spicy from the POST request
+        size_id = request.POST.get('size')
+        meat_id = request.POST.get('meat')
+        spicy_id = request.POST.get('spicy')
+
+        # Retrieve the selected size, meat, and spicy, or keep the current value if not provided
+        size = SizeModel.objects.get(id=size_id) if size_id else cart.size
+        meat = MeatModel.objects.get(id=meat_id) if meat_id else cart.meat
+        spicy = SpicyModel.objects.get(id=spicy_id) if spicy_id else cart.spicy
+
+        # Update the cart with the new values
+        cart.quantity = quantity
+        cart.note = note
+        cart.size = size
+        cart.meat = meat
+        cart.spicy = spicy
+        cart.total_price = cart.product.price * quantity  # Recalculate total price based on quantity
+        cart.takeaway = request.POST.get('takeaway') == 'on'
         cart.save()
+
+        # Show a success message and redirect the user back to the cart page
         messages.success(request, f'Cart updated successfully!')
-        return redirect(f"/carts/{cart.table.id}/")  # Redirect back to the order pag
+        return redirect(f"/carts/{cart.table.id}/")  # Redirect to the order page for the specific table
 
 def RemoveFromCart(request,id):
     cart = CartModel.objects.get(id=id)
     product = cart.product
-    product.quantity += cart.quantity
     product.save()
     table = cart.table
     cart.delete()
@@ -189,6 +206,7 @@ def OrderConfirm(request, id):
     # Send success message
     # Trigger a success message with cart item quantity
     message = f"စားပွဲနံပါတ် {table.id} မှ order မှာယူထားပါသည်။"
+    message2 = {"id":order.id,"item_id":cart_items,"table_id":table.id}
     messages.success(request, message)   
     # Send WebSocket notification
     send_websocket_notification(message)
@@ -387,7 +405,7 @@ def CreateProduct(request):
             price = request.POST.get("price"),
             category_id = request.POST.get('category'),
             image = request.FILES.get('image'),
-            quantity = request.POST.get('quantity')
+            stock = request.POST.get('stock') == 'on'
         )
         product.save()
         product.size.set(request.POST.getlist('size'))
@@ -421,7 +439,7 @@ def UpdateProduct(request,id):
             product.image.delete()
             product.image = request.FILES.get('image')
         product.category_id = request.POST.get('category')
-        product.quantity = request.POST.get('quantity')
+        product.stock = request.POST.get('stock') == 'on'
         product.save()
         product.size.set(request.POST.getlist('size'))
         product.spicy.set(request.POST.getlist('spicy'))
@@ -529,7 +547,8 @@ def CreateTable(request):
         return render(request,"create-table.html")
     if request.method == "POST":
         table = TableModel.objects.create(
-            name = request.POST.get('name')
+            name = request.POST.get('name'),
+            status = request.POST.get("status") == 'on'
         )
         table.save()
         messages.success(request,"Table is created successfully!")
@@ -546,6 +565,7 @@ def UpdateTable(request,id):
         return render(request,"update-table.html",context)
     if request.method == "POST":
         table.name = request.POST.get('name')
+        table.status = request.POST.get("status") == 'on'
         table.save()
         messages.success(request,"Table is updated successfully!")
         return redirect('/tables/')
