@@ -68,60 +68,43 @@
         console.log('WebSocket closed:', event.code, event.reason);
     };
 
-    let positionY = 0; // Track vertical position to stack notifications
-
     // Handle incoming messages
     socket.onmessage = function (event) {
         const data = JSON.parse(event.data);
         const message = data.message;
-        const alertType = data.type || "alert-info"; // Default to info if no type is provided
+        const alertType = data.type || "alert-success"; // Default to success if no type is provided
 
-        // Determine the icon, background, and color based on the message type
-        let icon, background, textColor;
+        // Create a new alert div
+        const notificationDiv = document.createElement('div');
+        notificationDiv.className = `alert ${alertType} alert-dismissible fade show message-box d-flex align-items-center`;
+        notificationDiv.role = "alert";
+        notificationDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close mb-2" data-bs-dismiss="alert" aria-label="btn-close">
+                <span><i class="fa-solid fa-xmark"></i></span>
+            </button>
+        `;
 
-        if (alertType === 'alert-success') {
-            icon = 'success';
-            background = '#155724';
-            textColor = '#d4edda';
-        } else if (alertType === 'alert-danger') {
-            icon = 'error';
-            background = '#721c24';
-            textColor = '#f8d7da';
-        } else if (alertType === 'alert-warning') {
-            icon = 'warning';
-            background = '#856404';
-            textColor = '#fff3cd';
-        } else if (alertType === 'alert-info') {
-            icon = 'info';
-            background = '#0c5460';
-            textColor = '#d1ecf1';
+        // Prepend the new alert to the message container
+        const messageContainer = document.querySelector('#message-container');
+        if (messageContainer) {
+            messageContainer.insertBefore(notificationDiv, messageContainer.firstChild);
         } else {
-            icon = 'info';
-            background = '#0c5460';
-            textColor = '#d1ecf1';
+            // Fallback: Create the container if it doesn't exist
+            const newContainer = document.createElement('div');
+            newContainer.id = 'message-container';
+            document.body.appendChild(newContainer);
+            newContainer.appendChild(notificationDiv);
         }
 
-        // Display each incoming message in sequence
-        Swal.fire({
-            toast: true,
-            position: 'top-start', // Stack notifications at the top-left
-            icon: icon,
-            title: message, // The message text
-            showConfirmButton: true,
-            background: background,
-            color: textColor,
-            // timer: 3000, // Optional: set timer for auto-close
-            willClose: () => {
-                // Move the next notification below the previous one
-                positionY += 40;  // Adjust the number based on your need for spacing
-            },
-            didOpen: () => {
-                // Adjust the margin-top dynamically to stack notifications
-                document.querySelector('.swal2-toast').style.marginTop = `${positionY}px`;
-            }
+        // Add event listener to the close button to remove the message on click
+        const closeButton = notificationDiv.querySelector('.btn-close');
+        closeButton.addEventListener('click', function () {
+            notificationDiv.remove();
         });
     };
 </script>
+
 
 <style>
     /* Styling for message box */
@@ -131,9 +114,8 @@
         right: 20px;
         z-index: 1000;
         display: flex;
-        flex-direction: column-reverse;
-        /* Ensures the newest messages appear on top */
         gap: 10px;
+        flex-direction: column;
     }
 
     .message-box {
