@@ -1,7 +1,7 @@
 # restaurant/routing.py
-from django.urls import path
+from django.urls import path,re_path
 from .consumers import MessageConsumer
 
 websocket_urlpatterns = [
-    path('ws/messages/', MessageConsumer.as_asgi()),
+    re_path(r'ws/notifications/', MessageConsumer.as_asgi()),
 ]

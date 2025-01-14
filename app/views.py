@@ -68,16 +68,6 @@ def Logout(request):
     logout(request)
     return redirect('/')
 
-def send_websocket_notification(message):
-    channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.group_send)(
-        'notifications',
-        {
-            'type': 'send_notification',
-            'message': message,
-        }
-    )
-
 def Carts(request, id):
     table = TableModel.objects.filter(id=id).first()
     cart_items = CartModel.objects.filter(table=table).order_by('-created_at')
@@ -180,37 +170,6 @@ def RemoveFromCart(request,id):
     cart.delete()
     messages.success(request, f'{cart.product.name} is removed from cart successfully!')
     return redirect(f'/carts/{table.id}/')
-
-def OrderConfirm(request, id):
-    table = TableModel.objects.get(id=id)
-    cart_items = CartModel.objects.filter(table=table, status=False)
-    total_price = 0
-    for item in cart_items:
-        total_price += item.product.price * item.quantity
-        item.status = True
-        item.save()
-    
-    # Create the order and associate it with the table
-    order = OrderModel.objects.create(
-        table=table,
-        total_price=total_price,
-    )
-    order.save()
-
-    # Add the cart items to the order (no need to add the 'order' field in CartModel)
-    order.cart_items.set(cart_items)
-
-    # Mark all cart items as confirmed (status=True)
-    cart_items.update(status=True)
-
-    # Send success message
-    # Trigger a success message with cart item quantity
-    message = f"စားပွဲနံပါတ် {table.id} မှ order မှာယူထားပါသည်။"
-    message2 = {"id":order.id,"item_id":cart_items,"table_id":table.id}
-    messages.success(request, message)   
-    # Send WebSocket notification
-    send_websocket_notification(message)
-    return redirect(f"/carts/{table.id}/")
 
 @login_required(login_url=settings.LOGIN_URL)
 @role_permission_required('app.view_categorymodel')
@@ -859,3 +818,64 @@ def DeleteSpicy(request,id):
     spicy.delete()
     messages.success(request,"spicy is deleted successfully!")
     return redirect('/spicies/')
+
+def send_websocket_notification(message):
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        'notifications',
+        {
+            'type': 'send_notification',
+            'message': message,
+        }
+    )
+
+def OrderConfirm(request, id):
+    try:
+        table = TableModel.objects.get(id=id)
+        cart_items = CartModel.objects.filter(table_id=table.id, status=False)
+        total_price = 0
+        order_items_details = []
+
+        for item in cart_items:
+            total_price += item.product.price * item.quantity
+            item.status = True
+            item.save()
+            order_items_details.append(f"{item.quantity}x {item.product.name} - {item.product.price} each")
+
+        # Create the order and associate it with the table
+        order = OrderModel.objects.create(
+            table=table,
+            total_price=total_price,
+        )
+        order.save()
+
+        # Add the cart items to the order
+        order.cart_items.set(cart_items)
+        # Prepare the detailed message with item information
+        message = f"Order placed at Table {table.id}: {', '.join(order_items_details)}. Total: {total_price}"
+
+        cart_items_serialized = [{
+            'item_id': item.id,
+            'quantity': item.quantity,
+            'product_name': item.product.name,
+            'product_price': item.product.price
+        } for item in cart_items]
+
+        message2 = {'id': order.id, 'items': cart_items_serialized, 'table_id': table.id}
+        print('###################', cart_items)
+        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@',cart_items_serialized)
+
+        # Send WebSocket notification
+        send_websocket_notification(message2)
+
+        # Mark all cart items as confirmed (status=True)
+        cart_items.update(status=True)
+
+        return redirect(f"/carts/{table.id}/")
+    except Exception as e:
+        print(e)
+        return redirect('/')
+
+
+def Kitchen(request):
+    return render(request,'kitchen.html')

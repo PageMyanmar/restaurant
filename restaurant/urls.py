@@ -103,6 +103,8 @@ urlpatterns = [
     path('update-spicy/<int:id>/',UpdateSpicy),
     path('delete-spicy/<int:id>/',DeleteSpicy),
 
+    path('kitchen/',Kitchen),
+
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:

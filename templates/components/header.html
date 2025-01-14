@@ -32,6 +32,10 @@
             </li>
             {% endif %}
 
+            <li class="nav__item">
+                <a href="/kitchen/" class="nav__link {% if request.path == '/kitchen/'%} active-link {% endif %}">Kitchen</a>
+            </li>
+
             {% if request.user|has_role_permission:'view_categorymodel' %}
             <li class="nav__item">
                 <a href="/categories/"

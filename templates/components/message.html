@@ -40,7 +40,7 @@
         icon: icon,
         title: '{{ message|escapejs }}',
         showConfirmButton: false,
-        timer: 3000,
+        timer: 1000,
         timerProgressBar: true,
         background: background,
         color: textColor
@@ -50,7 +50,7 @@
 </script>
 
 <!-- WebSocket Real-Time Messages -->
-<script>
+<!-- <script>
     // Initialize WebSocket connection
     const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
     const socket = new WebSocket(`${protocol}://${window.location.host}/ws/messages/`);
@@ -76,12 +76,12 @@
 
         // Create a new alert div
         const notificationDiv = document.createElement('div');
-        notificationDiv.className = `alert ${alertType} alert-dismissible fade show message-box d-flex align-items-center`;
+        notificationDiv.className = `${alertType} message`;
         notificationDiv.role = "alert";
         notificationDiv.innerHTML = `
             ${message}
-            <button type="button" class="btn-close mb-2" data-bs-dismiss="alert" aria-label="btn-close">
-                <span><i class="fa-solid fa-xmark"></i></span>
+            <button type="button" class="btn-close mb-2">
+                <span style='color:var(--body-color);font-size:1rem;padding-left:1rem;'>x</span>
             </button>
         `;
 
@@ -105,25 +105,26 @@
     };
 </script>
 
-
 <style>
     /* Styling for message box */
     #message-container {
         position: fixed;
         top: 100px;
         right: 20px;
-        z-index: 1000;
+        z-index: 10;
         display: flex;
-        gap: 10px;
+        gap: 1rem;
+        color:var(--body-color);
         flex-direction: column;
+    }
+
+    .message{
+        background-color: var(--first-color);
+        padding:1rem;
     }
 
     .message-box {
         min-width: 400px;
-    }
-
-    .message-box .btn-close i {
-        padding-bottom: 15px;
     }
 
     @media (max-width: 600px) {
@@ -131,5 +132,5 @@
             min-width: 200px;
         }
     }
-</style>
+</style> -->
 {% endif %}

@@ -1,0 +1,106 @@
+{% extends 'components/base.html' %}
+
+{% block title %}Kitchen{% endblock %}
+{% load static %}
+{% block body %}
+
+<!--=============== CHECKOUT ===============-->
+<section class="checkout section--lg container">
+    <div class="checkout__container grid" id="orders">
+
+        <div class="checkout__group">
+            <h3 class="section__title">Table Name Here</h3>
+            <table class="order__table" id="order">
+                <tr>
+                    <th colspan="2">Items</th>
+                    <th>Quantity</th>
+                </tr>
+
+                <tr>
+                    <td>
+                        <img src="{% static 'img/sample-pd.png' %}" alt="" class="order__img">
+                    </td>
+                    <td>
+                        <h3 class="table__title">item name</h3>
+                    </td>
+
+                    <td>
+                        <span class="table__price">100</span>
+                    </td>
+                </tr>
+
+
+            </table>
+        </div>
+        <div class="divider">
+            <i class="fi fi-rs-fingerprint"></i>
+        </div>
+    </div>
+</section>
+
+
+<script>
+    // Set up WebSocket connection
+    const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    const socket = new WebSocket(`${protocol}://${window.location.host}/ws/notifications/`);
+
+    // Listen for messages from the WebSocket server
+    socket.onmessage = function (event) {
+        const data = JSON.parse(event.data);
+        const datas = data.message;
+        const items = datas.items;
+
+        const alertType = data.type;
+
+        const ordersContainer = document.getElementById('orders');
+
+        items.map(item => {
+            const orderElement2 = document.createElement('tr'); // Create a table row <tr>
+
+            // Create first <td> for the image
+            const tdImage = document.createElement('td');
+            const imgElement = document.createElement('img');
+            imgElement.src = item.imageUrl;
+            imgElement.alt = item.product_name; // Use item name for alt text
+            imgElement.classList.add('order__img');
+            tdImage.appendChild(imgElement); // Append image to the <td>
+            
+            // Create second <td> for the item name
+            const tdName = document.createElement('td');
+            const h3Element = document.createElement('h3');
+            h3Element.classList.add('table__title');
+            h3Element.innerText = item.product_name;
+            tdName.appendChild(h3Element); // Append the item name to the <td>
+
+            // Create third <td> for the price
+            const tdPrice = document.createElement('td');
+            const priceSpan = document.createElement('span');
+            priceSpan.classList.add('table__price');
+            priceSpan.innerText = item.product_price;
+            tdPrice.appendChild(priceSpan); // Append the price to the <td>
+
+            // Append each <td> to the row
+            orderElement2.appendChild(tdImage);
+            orderElement2.appendChild(tdName);
+            orderElement2.appendChild(tdPrice);
+
+            // Append the row to the orders container
+            ordersContainer.appendChild(orderElement2);
+            ordersContainer.appendChild(orderElement2);
+        });
+
+        // document.getElementById('order').appendChild(orderElement);
+    };
+
+    // Handle any potential errors
+    socket.onerror = function (error) {
+        console.error('WebSocket error:', error);
+    };
+
+    // Close the socket when done
+    socket.onclose = function () {
+        console.log('WebSocket connection closed');
+    };
+</script>
+
+{% endblock %}
