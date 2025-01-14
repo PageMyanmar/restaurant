@@ -851,7 +851,6 @@ def OrderConfirm(request, id):
 
         # Add the cart items to the order
         order.cart_items.set(cart_items)
-        # Prepare the detailed message with item information
         message = f"Order placed at Table {table.id}: {', '.join(order_items_details)}. Total: {total_price}"
 
         cart_items_serialized = [{
@@ -862,13 +861,9 @@ def OrderConfirm(request, id):
         } for item in cart_items]
 
         message2 = {'id': order.id, 'items': cart_items_serialized, 'table_id': table.id}
-        print('###################', cart_items)
-        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@',cart_items_serialized)
-
-        # Send WebSocket notification
+       
         send_websocket_notification(message2)
 
-        # Mark all cart items as confirmed (status=True)
         cart_items.update(status=True)
 
         return redirect(f"/carts/{table.id}/")
