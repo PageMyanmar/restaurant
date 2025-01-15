@@ -55,7 +55,7 @@ def Login(request):
             if check_password(password, user.password):
                 login(request, user)
                 messages.success(request,f"Welcome {user.username}")
-                return redirect('/')
+                return redirect('/tables/')
             else:
                 messages.error(request,"Email or Password is incorrect!")
                 return redirect(settings.LOGIN_URL)
@@ -857,7 +857,8 @@ def OrderConfirm(request, id):
             'item_id': item.id,
             'quantity': item.quantity,
             'product_name': item.product.name,
-            'product_price': item.product.price
+            'product_price': item.product.price,
+            'status': item.status,
         } for item in cart_items]
 
         message2 = {'id': order.id, 'items': cart_items_serialized, 'table_id': table.id}

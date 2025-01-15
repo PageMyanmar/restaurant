@@ -8,19 +8,17 @@
 <!--=============== BREADCRUMB ===============-->
 <section class="breadcrumb">
     <ul class="breadcrumb__list flex container">
-        <li><a href="/" class="breadcrumb__link">Home</a></li>
-        <li><span class="breadcrumb__link">></span></li>
         <li><span class="breadcrumb__link">Login</span></li>
     </ul>
 </section>
 
 <!--=============== LOGIN-REGISTER ===============-->
 <section class="login-register section--lg">
-    <div class="login-register__container container grid">
-        <div class="login">
+    <div class="login-register__container container">
+        <div class="login" style="max-width: 500px;margin: 0 auto;">
             <h3 class="section__title">Login</h3>
 
-            <form action="/trncs/" method="POST" class="form grid">
+            <form action="/" method="POST" class="form grid">
                 {% csrf_token %}
                 <input type="email" name="email" class="form__input" placeholder="Your Email">
                 <input type="password" name="password" id="password" class="form__input" placeholder="Your Password">

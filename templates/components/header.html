@@ -3,13 +3,13 @@
 <!--=============== HEADER ===============-->
 
 <nav class="nav container">
-    <a href="/" class="nav__logo">
+    <a href="#" class="nav__logo">
         <img src="{% static 'img/logo.svg' %}" alt="" class="nav__logo-img">
     </a>
 
     <div class="nav__menu" id="nav-menu">
         <div class="nav__menu-top">
-            <a href="/" class="nav__menu-logo">
+            <a href="#" class="nav__menu-logo">
                 <img src="{% static 'img/logo.svg' %}" alt="">
             </a>
 
@@ -19,11 +19,6 @@
         </div>
 
         <ul class="nav__list">
-            {% if request.user.is_superuser %}
-            <li class="nav__item">
-                <a href="/" class="nav__link {% if request.path == '/'%} active-link {% endif %}">Dashboard</a>
-            </li>
-            {% endif %}
 
             {% if request.user|has_role_permission:'view_tablemodel' %}
             <li class="nav__item">
@@ -32,9 +27,11 @@
             </li>
             {% endif %}
 
+            {% if request.user|has_role_permission:'view_ordermodel' %}
             <li class="nav__item">
                 <a href="/kitchen/" class="nav__link {% if request.path == '/kitchen/'%} active-link {% endif %}">Kitchen</a>
             </li>
+            {% endif %}
 
             {% if request.user|has_role_permission:'view_categorymodel' %}
             <li class="nav__item">
@@ -64,14 +61,17 @@
             </li>
             {% endif %}
             
-            
+            {% if request.user|has_role_permission:'view_rolemodel' %}
             <li class="nav__item">
                 <a href="/roles/" class="nav__link {% if request.path == '/roles/'%} active-link {% endif %}">Roles</a>
             </li>
+            {% endif %}
           
+            {% if request.user|has_role_permission:'view_usermodel' %}
             <li class="nav__item">
                 <a href="/users/" class="nav__link {% if request.path == '/users/'%} active-link {% endif %}">Users</a>
             </li>
+            {% endif %}
 
             <!-- <li class="nav__item">
                 <a href="/contact/"
@@ -94,13 +94,12 @@
             {% endif %}
 
         </ul>
-
-        <div class="header__search">
-            <input type="text" placeholder="Search for items..." class="form__input">
-            <button class="search__btn">
+        <!-- <form method="GET" action="/search/{{table_id}}/" class="header__search">
+            <input type="search" placeholder="Search for items..." name="search" class="form__input">
+            <button type="submit" class="search__btn">
                 <img src="{% static 'img/search.png' %}" alt="">
             </button>
-        </div>
+        </form> -->
     </div>
 
     <div class="header__user-actions">
@@ -110,9 +109,10 @@
             <span class="count cart-count">{{ cart_count }}</span>
         </a>
         {% endif %}
-
+        {% if request.user.is_authenticated %}
         <div class="header__action-btn nav__toggle" id="nav-toggle">
             <img src="{% static 'img/menu-burger.svg' %}" alt="">
         </div>
+        {% endif %}
     </div>
 </nav>

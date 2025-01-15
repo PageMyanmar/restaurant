@@ -25,8 +25,8 @@ urlpatterns = [
     # re_path(r'^.*/$', Error404),
 
     # ==================== USER URLS ====================
-    path('',Index),
-    path('trncs/',Login),
+    # path('',Index),
+    path('',Login),
     path('register/',Register),
     path('logout/',Logout),
     path('shop/',Products),
