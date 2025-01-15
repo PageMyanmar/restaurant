@@ -7,24 +7,9 @@
 <!--=============== CHECKOUT ===============-->
 <section class="checkout section--lg container">
     <div class="checkout__container grid" id="orders">
-
-    <div class="checkout__group">
-        <h3 class="section__title">Table Name Here</h3>
-        <table class="order__table" id="order">
-            <!-- Table Header -->
-            <tr>
-                <th colspan="2">Items</th>
-                <th>Quantity</th>
-            </tr>
-        </table>
+        <!-- Groups will be dynamically added here -->
     </div>
-
-    <div class="divider">
-        <i class="fi fi-rs-fingerprint"></i>
-    </div>
-
 </section>
-
 
 <script>
     // Establish WebSocket connection
@@ -37,19 +22,48 @@
         const data = JSON.parse(event.data);
         const datas = data.message;
         const items = datas.items; // Extract items array from the message
+        const table_id = datas.table_id; // Extract table_id from the message
 
-        // Get reference to the table
-        const ordersContainer = document.getElementById('order');
+        // Get reference to the orders container
+        const ordersContainer = document.getElementById('orders');
 
-        // Clear existing rows except the header row
-        const rows = ordersContainer.querySelectorAll('tr');
-        rows.forEach((row, index) => {
-            if (index !== 0) row.remove(); // Remove all rows except the first (header)
-        });
+        // Create a new checkout__group div
+        const checkoutGroup = document.createElement('div');
+        checkoutGroup.className = 'checkout__group';
+
+        // Add a delete button for the entire checkout__group
+        const groupDeleteButton = document.createElement('button');
+        groupDeleteButton.textContent = 'Delete Table';
+        groupDeleteButton.className = 'delete__group-btn';
+        groupDeleteButton.onclick = () => {
+            ordersContainer.removeChild(checkoutGroup); // Remove the entire group
+        };
+
+        // Create the section title with table ID
+        const sectionTitle = document.createElement('h3');
+        sectionTitle.className = 'section__title';
+        sectionTitle.textContent = `Table ID: ${table_id}`;
+
+        // Append the title and delete button to the group
+        checkoutGroup.appendChild(sectionTitle);
+        checkoutGroup.appendChild(groupDeleteButton);
+
+        // Create the order table
+        const orderTable = document.createElement('table');
+        orderTable.className = 'order__table';
+
+        // Add table header
+        const tableHeader = document.createElement('tr');
+        tableHeader.innerHTML = `
+            <th colspan="2">Items</th>
+            <th>Quantity</th>
+            <th>Action</th>
+        `;
+        orderTable.appendChild(tableHeader);
 
         // Populate the table with new data
         items.forEach(item => {
-            const row = document.createElement('tr'); // Create a new row
+            const row = document.createElement('tr');
 
             // Add image column
             const imgCell = document.createElement('td');
@@ -76,10 +90,42 @@
             quantityCell.appendChild(quantitySpan);
             row.appendChild(quantityCell);
 
-            // Append the new row to the table
-            ordersContainer.appendChild(row);
+            // Add delete button column
+            const deleteCell = document.createElement('td');
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.className = 'delete__item-btn';
+            deleteButton.onclick = () => {
+                orderTable.removeChild(row); // Remove the specific row
+                checkAndRemoveGroup(checkoutGroup, orderTable); // Check if group should be removed
+            };
+            deleteCell.appendChild(deleteButton);
+            row.appendChild(deleteCell);
+
+            // Append the row to the table
+            orderTable.appendChild(row);
         });
+
+        // Append the table to the checkout group
+        checkoutGroup.appendChild(orderTable);
+
+        // Create and append a divider
+        const divider = document.createElement('div');
+        divider.className = 'divider';
+        divider.innerHTML = `<i class="fi fi-rs-fingerprint"></i>`;
+        checkoutGroup.appendChild(divider);
+
+        // Append the new checkout group to the orders container
+        ordersContainer.appendChild(checkoutGroup);
     };
+
+    // Helper function to check and remove checkout__group
+    function checkAndRemoveGroup(group, table) {
+        // Check if the table has only the header row
+        if (table.rows.length === 1) {
+            group.remove(); // Remove the entire group if no items are left
+        }
+    }
 
     // Handle WebSocket errors
     socket.onerror = function (error) {
