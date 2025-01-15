@@ -86,11 +86,11 @@
                 </div>
                 <div class="product__card--actions flex">
                     <!-- Update Button -->
-                    <button class="btn btn--sm update-cart {% if cart.status == True %}disabled{% endif %}" data-cart-id="{{ cart.id }}"
+                    <button style="padding-inline: 0.5rem;" class="btn btn--sm update-cart {% if cart.status == True %}disabled{% endif %}" data-cart-id="{{ cart.id }}"
                         data-cart-name="{{ cart.product.name }}"
                         data-cart-price="{{ cart.product.price }}" {% if cart.status == True %} disabled {% endif %}>Update</button>
                     <!-- Remove Button -->
-                    <button class="btn btn--sm delete-cart {% if cart.status == True %}disabled{% else %}delete{% endif %}"
+                    <button style="padding-inline: 0.5rem;" class="btn btn--sm delete-cart {% if cart.status == True %}disabled{% else %}delete{% endif %}"
                         onclick="window.location.href='/remove-from-cart/{{cart.id}}/'"{% if cart.status == True %} disabled {% endif %}>Remove</button>
                 </div>
             </div>
@@ -292,6 +292,7 @@
         border: 1px solid #888;
         box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
         border-radius: 8px;
+        position: relative;
     }
 
     .form-group {
@@ -304,7 +305,9 @@
     /* Close button */
     .close {
         color: #aaa;
-        float: right;
+        position: absolute;
+        top:5px;
+        right:10px;
         font-size: 28px;
         font-weight: bold;
     }

@@ -46,7 +46,7 @@
                 {% if request.user|has_role_permission:'change_rolemodel' and request.user|has_role_permission:'delete_rolemodel' %}
                 <td style="width: 300px;">
                     <a href="/update-role/{{role.id}}/" class="btn btn-es">Edit</a>
-                    <a href="/update-role/{{role.id}}/" class="btn btn-es delete">Delete</a>
+                    <a href="/delete-role/{{role.id}}/" class="btn btn-es delete">Delete</a>
                 </td>
                 {% endif %}
             </tr>

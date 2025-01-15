@@ -43,7 +43,7 @@
                 {% if request.user|has_role_permission:'change_meatmodel' and request.user|has_role_permission:'delete_meatmodel' %}
                 <td style="width: 300px;">
                     <a href="/update-meat/{{meat.id}}/" class="btn btn-es">Edit</a>
-                    <a href="/update-meat/{{meat.id}}/" class="btn btn-es delete">Delete</a>
+                    <a href="/delete-meat/{{meat.id}}/" class="btn btn-es delete">Delete</a>
                 </td>
                 {% endif %}
             </tr>
